@@ -2,6 +2,7 @@ var sys = require("sys")
   ,http = require("http")
   ,url = require("url")
   ,path = require('path')
+  ,fs = require('fs')
   ,paperboy = require('paperboy')
   ,WEBROOT = path.join(path.dirname(__filename), 'static')
   ,io = require('socket.io')
@@ -25,6 +26,14 @@ var uuid = function() {
    }
    return uuid.join('');
 };
+
+var keys = function(obj){
+  var keys = [];
+  for(i in obj) if (obj.hasOwnProperty(i)){
+    keys.push(i);
+  }
+  return keys;
+}
 
 //Finish the request
 var finish = function(req, res, data) {
@@ -110,11 +119,40 @@ http.createServer(function (req, res) {
     var cmd = JSON.parse(data);
 
     if (cmd.meth == "start") {
+      var startURL = "http://www.jeeoh.com/jelly-serv/index.html";
       var session = {};
       session.port = port;
       session.tid = uuid();
       session.frames = {};
+      session.queue = [];
+      session.resolve = {};
       port++;
+      session.interval = setInterval(function() {
+        if ((keys(session.frames).length != 0) &&
+          (session.queue.length != 0)) {
+            
+          var job = session.queue.shift();
+          session.resolve[job["qid"]] = job;
+          
+          console.log("Taking job "+job.qid);
+          var msg = {meth:"run"};
+          msg.code = job.code;
+          msg.qid = job.qid;
+          
+          var arr = keys(session["frames"]);
+          //allow multiple frame logic
+          var frame = null;
+          if (!job.frame) {
+            frame = session["frames"][arr[0]];
+          }
+          else {
+            frame = session["frames"][job["frame"]];
+          }
+          console.log("Sending job to "+arr[0]);
+          
+          frame.send(JSON.stringify(msg));
+        }
+      }, 1000);
       
       //start the proxy server
       var server = http.createServer(requestHandler);
@@ -124,7 +162,7 @@ http.createServer(function (req, res) {
         
         //delete dead clients
         for (var key in session["frames"]) {
-          if (session.frames[key].connected != true){
+          if (!session.frames[key].connected){
             delete session.frames[key];
           }
         }
@@ -137,6 +175,12 @@ http.createServer(function (req, res) {
             console.log("Registering frame: "+msg.title);
             session.frames[msg.title] = client;
           }
+          else if (msg.meth == "result") {
+            console.log("Got result from "+msg.qid);
+            var job = session.resolve[msg.qid];
+            console.log(msg.res);
+            finish(job.req, job.res, {"result":msg.res});
+          }
         }) 
         client.on('disconnect', function() {
           console.log("Frame Socket disconnect on TID "+ session.tid);
@@ -145,18 +189,42 @@ http.createServer(function (req, res) {
 
       console.log("Started server for "+session.tid+" on port "+session.port)
       session.server = server;
-      //session.socket = socket;
+      session.socket = socket;
       
       if (cmd.browser == "chrome") {
         //start chrome
         var chrome = path.normalize('/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome');
         var proxy = "--proxy-server=127.0.0.1:"+session.port;
-        session.browser = spawn(chrome, [proxy, "--disable-popup-blocking", "--homepage=http://www.jeeoh.com/jelly-serv/index.html"]);
-        
+        session.browser = spawn(chrome, [proxy, "--disable-popup-blocking", "--homepage="+startURL]);
         //output when it's killed
         session.browser.on('exit', function (code) {
           console.log('Killed browser with TID: ' + session.tid);
         });
+      }
+      else if (cmd.browser == "firefox") {
+        var ff = path.normalize('/Applications/Firefox.app/Contents/MacOS/firefox');
+        var createProfile = spawn(ff, ["-CreateProfile", session.tid+" /tmp/jelly/"+session.tid]);
+        createProfile.on("exit", function(code) {
+          
+          var defaultPref = 'user_pref("browser.shell.checkDefaultBrowser",false);';
+          defaultPref += 'user_pref("network.proxy.http", "127.0.0.1");';
+          defaultPref += 'user_pref("network.proxy.http_port",'+session.port+');'
+          defaultPref += 'user_pref("network.proxy.no_proxies_on", "");';
+          defaultPref += 'user_pref("network.proxy.type", 1);';
+          defaultPref += 'user_pref("startup.homepage_override_url", "'+startURL+'");';
+          defaultPref += 'user_pref("browser.startup.homepage", "'+startURL+'");';
+          defaultPref += 'user_pref("startup.homepage_welcome_url", "");';
+          defaultPref += 'user_pref("browser.rights.3.shown", true);';
+                    
+          var prefjs = fs.createWriteStream('/tmp/jelly/'+session.tid+'/prefs.js', {'flags': 'a'});
+          prefjs.write(defaultPref);
+          session.browser = spawn(ff, ["-P", session.tid]);
+          //output when it's killed
+          session.browser.on('exit', function (code) {
+            console.log('Killed browser with TID: ' + session.tid);
+          });
+        });
+
       }
       else {
         //probably default to a tobi browser
@@ -173,7 +241,6 @@ http.createServer(function (req, res) {
     if (cmd.meth == "stop") {
       var session = tentacles[cmd.tid];
       session.browser.kill('SIGHUP');
-      session.socket.close();
       session.server.close();
       console.log("Killing server for TID: "+session.tid);
       delete tentacles[cmd.tid];
@@ -200,16 +267,13 @@ http.createServer(function (req, res) {
     
     if (cmd.meth == "run") {
       var nemato = tentacles[cmd.tid];
-      var arr = [];
-      for (var key in nemato["frames"]) {
-        arr.push(key);
-      }
-      //allow multiple frame logic
-      var frame = nemato["frames"][arr[0]];
+
       var run = {meth:"run"};
       run.code = cmd.code;
-      frame.send(JSON.stringify(run));
-      finish(req, res, {"result":"true"});
+      run.req = req;
+      run.res = res;
+      run.qid = uuid();
+      nemato.queue.push(run);
     }
     
   });

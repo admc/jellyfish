@@ -1,7 +1,7 @@
 var $jellyQ = jQuery.noConflict();
 
 $jellyQ(document).ready(function(){
-  var socket = new io.Socket(window.location.hostname);
+  var socket = new io.Socket();
   socket.connect();
   socket.on('connect', function() {
     var frame = {};
@@ -12,14 +12,20 @@ $jellyQ(document).ready(function(){
   socket.on('message', function(data) {
     var obj = JSON.parse(data);
     if (obj.meth == "run") {
-      var res = eval(obj.code);
+      var res = null;
+      try {
+        res = eval(obj.code);
+      } catch(err){
+        res = err;
+      }
       var rObj = {};
       rObj.meth = "result";
-      rObj.val = res;
+      rObj.res = res;
+      rObj.qid = obj.qid;
       socket.send(JSON.stringify(rObj));
     }
   });
-  socket.on('disconnect', function(data) {
-    socket.connect();
-  });
+  // socket.on('disconnect', function(data) {
+  //   socket.connect();
+  // });
 });
