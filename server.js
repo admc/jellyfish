@@ -1,12 +1,11 @@
-var sys = require("sys")
-  ,http = require("http")
-  ,url = require("url")
-  ,path = require('path')
-  ,fs = require('fs')
-  ,paperboy = require('paperboy')
-  ,WEBROOT = path.join(path.dirname(__filename), 'static')
-  ,io = require('socket.io')
-  ,spawn = require('child_process').spawn;
+var sys = require('sys')
+  , http = require('http')
+  , url = require('url')
+  , path = require('path')
+  , paperboy = require('paperboy')
+  , WEBROOT = path.join(path.dirname(__filename), 'static')
+  , io = require('socket.io')
+  , browsers = require('./lib/browsers');
   
 //Global registry of browsers
 var tentacles = {};
@@ -45,6 +44,7 @@ var finish = function(req, res, data) {
   res.end();
 }
 
+//Proxy injection server
 var requestHandler = function (req, res) {
   var ip = req.connection.remoteAddress;
   var uri = url.parse(req.url);
@@ -128,6 +128,12 @@ http.createServer(function (req, res) {
       session.resolve = {};
       port++;
       session.interval = setInterval(function() {
+        //repeated cleanup code
+        for (var key in session["frames"]) {
+          if (!session.frames[key].connected){
+            delete session.frames[key];
+          }
+        }
         if ((keys(session.frames).length != 0) &&
           (session.queue.length != 0)) {
             
@@ -156,10 +162,22 @@ http.createServer(function (req, res) {
       
       //start the proxy server
       var server = http.createServer(requestHandler);
-      server.listen(session.port);
+      //this should be a loop to find the next available port
+      try {
+        server.listen(session.port);
+      } catch(err) {
+        port++;
+        session.port++;
+        server.listen(session.port);
+      }
       var socket = io.listen(server);
       socket.on('connection', function(client) {
-        
+        //repeated cleanup code
+        for (var key in session["frames"]) {
+          if (!session.frames[key].connected){
+            delete session.frames[key];
+          }
+        }
         //delete dead clients
         for (var key in session["frames"]) {
           if (!session.frames[key].connected){
@@ -167,7 +185,6 @@ http.createServer(function (req, res) {
           }
         }
         
-        // new client is here!
         console.log("Frame Socket connected on TID "+ session.tid);
         client.on('message', function(message) {
           var msg = JSON.parse(message);
@@ -176,13 +193,18 @@ http.createServer(function (req, res) {
             session.frames[msg.title] = client;
           }
           else if (msg.meth == "result") {
-            console.log("Got result from "+msg.qid);
+            console.log("Received result from "+msg.qid);
             var job = session.resolve[msg.qid];
-            console.log(msg.res);
             finish(job.req, job.res, {"result":msg.res});
           }
         }) 
         client.on('disconnect', function() {
+          //repeated cleanup code
+          for (var key in session["frames"]) {
+            if (!session.frames[key].connected){
+              delete session.frames[key];
+            }
+          }
           console.log("Frame Socket disconnect on TID "+ session.tid);
         }) 
       });
@@ -192,39 +214,20 @@ http.createServer(function (req, res) {
       session.socket = socket;
       
       if (cmd.browser == "chrome") {
-        //start chrome
-        var chrome = path.normalize('/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome');
-        var proxy = "--proxy-server=127.0.0.1:"+session.port;
-        session.browser = spawn(chrome, [proxy, "--disable-popup-blocking", "--homepage="+startURL]);
-        //output when it's killed
-        session.browser.on('exit', function (code) {
-          console.log('Killed browser with TID: ' + session.tid);
-        });
-      }
-      else if (cmd.browser == "firefox") {
-        var ff = path.normalize('/Applications/Firefox.app/Contents/MacOS/firefox');
-        var createProfile = spawn(ff, ["-CreateProfile", session.tid+" /tmp/jelly/"+session.tid]);
-        createProfile.on("exit", function(code) {
-          
-          var defaultPref = 'user_pref("browser.shell.checkDefaultBrowser",false);';
-          defaultPref += 'user_pref("network.proxy.http", "127.0.0.1");';
-          defaultPref += 'user_pref("network.proxy.http_port",'+session.port+');'
-          defaultPref += 'user_pref("network.proxy.no_proxies_on", "");';
-          defaultPref += 'user_pref("network.proxy.type", 1);';
-          defaultPref += 'user_pref("startup.homepage_override_url", "'+startURL+'");';
-          defaultPref += 'user_pref("browser.startup.homepage", "'+startURL+'");';
-          defaultPref += 'user_pref("startup.homepage_welcome_url", "");';
-          defaultPref += 'user_pref("browser.rights.3.shown", true);';
-                    
-          var prefjs = fs.createWriteStream('/tmp/jelly/'+session.tid+'/prefs.js', {'flags': 'a'});
-          prefjs.write(defaultPref);
-          session.browser = spawn(ff, ["-P", session.tid]);
-          //output when it's killed
-          session.browser.on('exit', function (code) {
+        session.browser = new browsers.chrome();
+        session.browser.start(function(b){
+          b.on('exit', function (code) {
             console.log('Killed browser with TID: ' + session.tid);
           });
-        });
-
+        }, startURL, session.port)
+      }
+      else if (cmd.browser == "firefox") {
+        session.browser = new browsers.firefox();
+        session.browser.start(function(b){
+          b.on('exit', function (code) {
+            console.log('Killed browser with TID: ' + session.tid);
+          });
+        }, startURL, session.port)        
       }
       else {
         //probably default to a tobi browser
@@ -240,23 +243,21 @@ http.createServer(function (req, res) {
     
     if (cmd.meth == "stop") {
       var session = tentacles[cmd.tid];
-      session.browser.kill('SIGHUP');
+      session.browser.stop();
       session.server.close();
       console.log("Killing server for TID: "+session.tid);
       delete tentacles[cmd.tid];
       
       finish(req, res, {"result":"true"});
     }
-    
-    if (cmd.meth == "list") {
+    else if (cmd.meth == "list") {
       var arr = [];
       for (var key in tentacles) {
         arr.push(key);
       }
       finish(req, res, arr);
     }
-    
-    if (cmd.meth == "frames") {
+    else if (cmd.meth == "frames") {
       var nemato = tentacles[cmd.tid];
       var arr = [];
       for (var key in nemato["frames"]) {
@@ -264,10 +265,8 @@ http.createServer(function (req, res) {
       }
       finish(req, res, arr);
     }
-    
-    if (cmd.meth == "run") {
+    else if (cmd.meth == "run") {
       var nemato = tentacles[cmd.tid];
-
       var run = {meth:"run"};
       run.code = cmd.code;
       run.req = req;
@@ -275,7 +274,9 @@ http.createServer(function (req, res) {
       run.qid = uuid();
       nemato.queue.push(run);
     }
-    
+    else {
+      finish(req, res, {"result": "WTF"});
+    }
   });
 }).listen(8888);
 sys.puts('Service Server running at http://127.0.0.1:8888/');
@@ -283,7 +284,7 @@ sys.puts('Service Server running at http://127.0.0.1:8888/');
 //Nice cleanup
 process.on('exit', function () {
   for (var key in tentacles) {
-    tentacles[key].browser.kill('SIGHUP');
+    tentacles[key].browser.stop();
     tentacles[key].socket.close();
     tentacles[key].server.close();
   }

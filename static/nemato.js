@@ -1,6 +1,6 @@
-var $jellyQ = jQuery.noConflict();
+var $jfQ = jQuery.noConflict();
 
-$jellyQ(document).ready(function(){
+$jfQ(document).ready(function(){
   var socket = new io.Socket();
   socket.connect();
   socket.on('connect', function() {
@@ -12,6 +12,16 @@ $jellyQ(document).ready(function(){
   socket.on('message', function(data) {
     var obj = JSON.parse(data);
     if (obj.meth == "run") {
+      window.alert = function(str) {
+        return "Alerted: " + str;
+      }
+      window.onbeforeunload = function() {
+        var rObj = {};
+        rObj.meth = "result";
+        rObj.res = "Page Unloaded";
+        rObj.qid = obj.qid;
+        socket.send(JSON.stringify(rObj));
+      }
       var res = null;
       try {
         res = eval(obj.code);
@@ -25,7 +35,7 @@ $jellyQ(document).ready(function(){
       socket.send(JSON.stringify(rObj));
     }
   });
-  // socket.on('disconnect', function(data) {
-  //   socket.connect();
-  // });
+  socket.on('disconnect', function(data) {
+    socket.connect();
+  });
 });
