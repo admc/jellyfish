@@ -17,14 +17,12 @@ ff.js("$jfQ(document.body).html()", function(o) {
 })
 
 local script: 
-ff.script("test.js", function(o){
+ff.jsfile("./test.js", function(o){
   console.log(o.result)
 })
 
 remote script: 
-ff.url("http://www.adamchristian.com/test.js", function(o) {
-  console.log(o.result)
-})
+ff.jsurl("http://www.adamchristian.com/test.js", function(o) { console.log(o.result)})
 
 Assert
 

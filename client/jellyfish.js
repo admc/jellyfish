@@ -26,9 +26,10 @@ jellyfish = function(b, cb) {
     d.call(_this, {meth:'start', browser:browser}, 
     function(err, resp, body) {
       var obj = JSON.parse(body);
+      console.log(obj);
       _this.tid = obj.tid;
       if (cb) {
-        cb(obj);
+        cb.call(_this, obj);
       }
     })
     return _this;
@@ -41,8 +42,9 @@ jellyfish = function(b, cb) {
         function(err, resp, body) {
           _this.tid = null;
           var obj = JSON.parse(body);
+          console.log(obj);
           if (cb) {
-            cb(obj);
+            cb.call(_this, obj);
           }
         })
     }
@@ -54,8 +56,9 @@ jellyfish = function(b, cb) {
     d.call(_this, {meth:'frames'}, 
       function(err, resp, body) {
         var obj = JSON.parse(body);
+        console.log(obj);
         if (cb) {
-          cb(obj);
+          cb.call(_this, obj);
         }
       })
     return _this;
@@ -66,8 +69,9 @@ jellyfish = function(b, cb) {
     d.call(_this, {meth:'run', code:"window.location.href='"+url+"'"}, 
       function(err, resp, body) {
         var obj = JSON.parse(body);
+        console.log(obj);
         if (cb) {
-          cb(obj);
+          cb.call(_this, obj);
         }
       })
     return _this;
@@ -78,15 +82,16 @@ jellyfish = function(b, cb) {
     d.call(_this, {meth:'run', code:str}, 
       function(err, resp, body) {
         var obj = JSON.parse(body);
+        console.log(obj);
         if (cb) {
-          cb(obj);
+          cb.call(_this, obj);
         }
       })
     return _this;
   }
   
   //run code in local script
-  this.script = function(path, cb) {
+  this.jsfile = function(path, cb) {
     fs.readFile(path, 'utf8', function(err, code) {
       if (err) {
         console.log("Couldn't read script: " + path);
@@ -95,8 +100,9 @@ jellyfish = function(b, cb) {
         d.call(_this, {meth:'run', code:code}, 
           function(err, resp, body) {
             var obj = JSON.parse(body);
+            console.log(obj);
             if (cb) {
-              cb(obj);
+              cb.call(_this, obj);
             }
           })
       }
@@ -105,7 +111,7 @@ jellyfish = function(b, cb) {
   }
   
   //run code in a provided url
-  this.url = function(url, cb) {
+  this.jsurl = function(url, cb) {
     request({
       uri: url,
       method: 'GET'
@@ -119,7 +125,7 @@ jellyfish = function(b, cb) {
           function(err, resp, body) {
             var obj = JSON.parse(body);
             if (cb) {
-              cb(obj);
+              cb.call(_this, obj);
             }
           })
       }

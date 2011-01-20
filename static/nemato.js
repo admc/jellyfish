@@ -11,6 +11,7 @@ $jfQ(document).ready(function(){
   });
   socket.on('message', function(data) {
     var obj = JSON.parse(data);
+    
     if (obj.meth == "run") {
       window.alert = function(str) {
         return "Alerted: " + str;
