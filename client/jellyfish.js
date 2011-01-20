@@ -88,7 +88,7 @@ jellyfish = function(b, cb) {
         }
       })
     return _this;
-  }
+  };
   
   //run code in local script
   this.jsfile = function(path, cb) {
@@ -108,7 +108,7 @@ jellyfish = function(b, cb) {
       }
     });
     return _this;
-  }
+  };
   
   //run code in a provided url
   this.jsurl = function(url, cb) {
@@ -131,6 +131,20 @@ jellyfish = function(b, cb) {
           })
       }
     });
+    return _this;
+  };
+  
+  //run raw js
+  this.user = function(meth, obj, cb) {
+    var str = "wm.user('"+meth+"',"+JSON.stringify(obj)+")";
+    d.call(_this, {meth:'run', code:str}, 
+      function(err, resp, body) {
+        var obj = JSON.parse(body);
+        console.log(obj);
+        if (cb) {
+          cb.call(_this, obj);
+        }
+      })
     return _this;
   }
   

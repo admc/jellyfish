@@ -1,7 +1,8 @@
 var $jfQ = jQuery.noConflict();
 
 $jfQ(document).ready(function(){
-  var socket = new io.Socket();
+  
+  var socket = new io.Socket('localhost');
   socket.connect();
   socket.on('connect', function() {
     var frame = {};
@@ -36,8 +37,10 @@ $jfQ(document).ready(function(){
       socket.send(JSON.stringify(rObj));
     }
   });
-  socket.on('disconnect', function(data) {
-    //socket.connect();
-    window.location.reload(true);
-  });
+  // socket.on('disconnect', function(data) {
+  //   //socket.connect();
+  //   window.location.reload(true);
+  // });
+  $jfQ(document.body).append('<script type="text/javascript" src="/jelly-serv/user.js"></script>')
 });
+

@@ -43,6 +43,24 @@ jQuery
 You can always use the injected jQuery, called $jfQ
 
 
+User interactions
+
+ff.user("type", {text:'moo', name:'q'})
+ff.user("click", {name:'btnG'})
+
+also alt + t gives you a JS runner
+
+and you can paste the following test in there to run it:
+
+wm.user('type',{'text':'testing', 'name':'q'});
+wm.user('waits.sleep', {'ms':5000});
+wm.user('type',{'text':'numbertwo', 'name':'q'});
+wm.user('asserts.assertValue', {'name':'q', 'validator':'numbertwo'})
+wm.user('waits.sleep', {'ms':3000});
+wm.user('type',{'text':'finally', 'name':'q'});
+wm.user('asserts.assertValue', {'name':'q', 'validator':'finally'}))
+
+
 ----------------
 
 Raw API

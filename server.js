@@ -52,12 +52,12 @@ var finish = function(req, res, data) {
 var requestHandler = function (req, res) {
   var ip = req.connection.remoteAddress;
   var uri = url.parse(req.url);
-
+  
   if (uri.port == undefined) {
     uri.port = {"http:":80,"https:":443}[uri.protocol]
   }
   var pathname = uri.search ? uri.pathname + uri.search : uri.pathname;
-  
+
   //Serve up static files
   if (pathname.indexOf('jelly-serv') != -1) {
     //if jelly-serv is involved, we rm the whole path except the file
@@ -93,10 +93,6 @@ var requestHandler = function (req, res) {
              var includes = '<script type="text/javascript" src="/jelly-serv/jquery-1.4.4.min.js"></script>';
              includes += '<script type="text/javascript" src="/jelly-serv/socket.io.js"></script>';
              includes += '<script type="text/javascript" src="/jelly-serv/nemato.js"></script>';
-             //include each of the args specified on the CLI
-             // args.forEach(function (val, index, array) {
-             //   includes += '<script type="text/javascript" src="/jelly-serv/'+val+'.js"></script>';
-             // });
              includes += '</head>';
              chunk = chunk.toString().replace('</head>', includes);
            }
@@ -124,7 +120,7 @@ http.createServer(function (req, res) {
     
     // Starting up a tentacle session
     if (cmd.meth == "start") {
-      var startURL = "http://www.jeeoh.com/jelly-serv/index.html";
+      var startURL = "http://jelly.io/jelly-serv/index.html";
       var session = {};
       session.port = port;
       session.tid = uuid();
@@ -280,6 +276,6 @@ process.on('exit', function () {
   }
 });
 
-// process.on('uncaughtException', function (err) {
-//   console.log('Caught exception: ' + err);
-// });
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+});
