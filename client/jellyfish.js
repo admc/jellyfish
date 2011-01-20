@@ -124,6 +124,7 @@ jellyfish = function(b, cb) {
         d.call(_this, {meth:'run', code:code}, 
           function(err, resp, body) {
             var obj = JSON.parse(body);
+            console.log(obj);
             if (cb) {
               cb.call(_this, obj);
             }

@@ -131,15 +131,18 @@ http.createServer(function (req, res) {
       session.frames = {};
       session.queue = [];
       session.resolve = {};
+      session.live = true;
       port++;
       
       // Polling loop to dispatch jobs from the tid queue
       session.dispatch = setInterval(function() {
-        if ((keys(session.frames).length != 0) &&
-          (session.queue.length != 0)) {
+        if ((keys(session.frames).length != 0) && 
+          (session.queue.length != 0) && 
+          (session.live)) {
+          
+          session.live = false;
           
           var job = session.queue.shift();
-          //if the job has been dispatched, keep waiting
           session.resolve[job.qid] = job;
           
           console.log("Taking job "+job.qid);
@@ -159,6 +162,7 @@ http.createServer(function (req, res) {
       
       // Start the proxy server
       var server = http.createServer(requestHandler);
+      
       //this should be a loop to find the next available port
       try {
         server.listen(session.port);
@@ -170,7 +174,8 @@ http.createServer(function (req, res) {
       
       // Startup a socket.io session for this proxy session
       var socket = io.listen(server);
-      socket.on('connection', function(client) {        
+      socket.on('connection', function(client) {
+        session.live = true;
         console.log("Frame Socket connected on TID "+ session.tid);
         client.on('message', function(message) {
           var msg = JSON.parse(message);
@@ -181,7 +186,7 @@ http.createServer(function (req, res) {
           else if (msg.meth == "result") {
             console.log("Received result from "+msg.qid);
             var job = session.resolve[msg.qid];
-            job.resolved = true;
+            session.live = true;
             finish(job.req, job.res, {"result":msg.res});
           }
         }) 

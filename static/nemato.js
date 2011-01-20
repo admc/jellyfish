@@ -37,6 +37,7 @@ $jfQ(document).ready(function(){
     }
   });
   socket.on('disconnect', function(data) {
-    socket.connect();
+    //socket.connect();
+    window.location.reload(true);
   });
 });
