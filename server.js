@@ -59,7 +59,7 @@ http.createServer(function (req, res) {
       var session = {};
       session.port = port;
       session.tid = uuid();
-      session.frames = [];
+      session.frames = {};
       session.queue = [];
       session.resolve = {};
       port++;
@@ -84,11 +84,11 @@ http.createServer(function (req, res) {
              } catch(err){}
  
               var j = session.queue[0];
-              
+                            
               if ((j.frame) && (j.frame == title)) {
                 var job = session.queue.shift();
                 session.resolve[job.qid] = job;
-                console.log("Dispatching "+job.meth+" to: "+session.tid);
+                console.log("Dispatching "+job.meth+" to: "+session.tid+" title: "+title);
                 var msg = {meth:"run"};
                 msg.code = job.code;
                 msg.qid = job.qid;
@@ -97,7 +97,7 @@ http.createServer(function (req, res) {
               else if (!j.frame) {
                 var job = session.queue.shift();
                 session.resolve[job.qid] = job;
-                console.log("Dispatching "+job.meth+" to: "+session.tid);
+                console.log("Dispatching "+job.meth+" to: "+session.tid+" title: "+title);
                 var msg = {meth:"run"};
                 msg.code = job.code;
                 msg.qid = job.qid;
@@ -110,6 +110,16 @@ http.createServer(function (req, res) {
            
            finish(req, res, {tid:session.tid});
          }
+         else if (pathname.indexOf('_jellyfish/die') != -1) {
+            req.addListener("data", function (chunk) {
+              var data = chunk.toString();
+              var msg = JSON.parse(data);
+
+              console.log("Frame dying: " + JSON.stringify(msg));
+              delete session.frames[msg.title];
+              finish(req, res, {tid:session.tid, result:true});
+            })
+         }
          else if (pathname.indexOf('_jellyfish/result') != -1) {
            req.addListener("data", function (chunk) {
              var data = chunk.toString();
@@ -118,6 +128,7 @@ http.createServer(function (req, res) {
              console.log("Recording result for: " + JSON.stringify(msg));
              var job = session.resolve[msg.qid];
              finish(job.req, job.res, {"result":msg.res});
+             finish(req, res, {tid:session.tid, result:true});
            })
          }
          //register frames
@@ -127,7 +138,7 @@ http.createServer(function (req, res) {
              var msg = JSON.parse(data);
              
              console.log("Registering frame: "+"tid:"+ session.tid + " title: "+ msg.title);
-             session.frames.push(msg.title);
+             session.frames[msg.title] = msg;
              finish(req, res, {tid:session.tid});
            })
          }
@@ -255,7 +266,7 @@ http.createServer(function (req, res) {
     }
     // Run javascript!
     else if (cmd.meth == "run") {
-      console.log("Adding" + JSON.stringify(cmd))   ;
+      console.log("Adding " + JSON.stringify(cmd))   ;
       var session = tentacles[cmd.tid];
       var run = {meth:"run"};
       run.code = cmd.code;

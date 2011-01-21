@@ -7,6 +7,9 @@ var d = function(obj, func) {
   if (this.tid) {
     obj.tid = this.tid;
   }
+  if (this.frame) {
+    obj.frame = this.frame;
+  }
   
   request({
       uri: this.server,
@@ -20,6 +23,7 @@ jellyfish = function(b, cb) {
   var _this = this;
   this.server = 'http://localhost:8888';
   this.tid = null;
+  this.frame = null;
 
   //start a browser
   this.start = function(browser, cb) {
@@ -146,7 +150,17 @@ jellyfish = function(b, cb) {
         }
       })
     return _this;
-  }
+  };
+  
+  this.to = function(frame) {
+    if (frame) {
+      _this.frame = frame;
+    }
+    else {
+      _this.frame = null;
+    }
+    return _this;
+  };
   
   //if a browser is provided, start it
   if (b) {
