@@ -4,7 +4,6 @@ var sys = require('sys')
   , path = require('path')
   , paperboy = require('paperboy')
   , WEBROOT = path.join(path.dirname(__filename), 'static')
-  , io = require('socket.io')
   , browsers = require('./lib/browsers');
   
 //Global registry of browsers
@@ -48,116 +47,146 @@ var finish = function(req, res, data) {
   res.end();
 }
 
-// Proxy injection server
-var requestHandler = function (req, res) {
-  var ip = req.connection.remoteAddress;
-  var uri = url.parse(req.url);
-  
-  if (uri.port == undefined) {
-    uri.port = {"http:":80,"https:":443}[uri.protocol]
-  }
-  var pathname = uri.search ? uri.pathname + uri.search : uri.pathname;
-
-  //Serve up static files
-  if (pathname.indexOf('jelly-serv') != -1) {
-    //if jelly-serv is involved, we rm the whole path except the file
-    //name and serve it from the static directory
-    var fname = req.url.split("/");
-    req.url = req.url.replace(pathname, "/" + fname[fname.length -1]);
-
-    paperboy
-    .deliver(WEBROOT, req, res)
-    .otherwise(function() {
-      res.writeHead(404, {'Content-Type': 'text/plain'});
-      res.write('Sorry, no paper this morning!');
-      res.close();
-    });
-  }
-  else {
-    // Actual proxying happens here
-    var c = http.createClient(uri.port, uri.hostname);
-    c.on("error", function (e) { console.error("client error "+e.stack) }) 
-    
-    // Stop from requesting gzip
-    req.headers['accept-encoding'] = "text/html";
-
-    var proxyRequest = c.request(req.method, pathname, req.headers);
-    proxyRequest.on("error", function (e) { console.error("request error "+e.stack) }) 
-    
-    proxyRequest.addListener("response", function (response) {
-      res.writeHead(response.statusCode, response.headers);
-      response.addListener("data", function (chunk) {
-        // modify the html content
-        if (response.headers['content-type'].indexOf("text/html") != -1) {
-           if (chunk.toString().indexOf('</head>')) {
-             var includes = '<script type="text/javascript" src="/jelly-serv/jquery-1.4.4.min.js"></script>';
-             includes += '<script type="text/javascript" src="/jelly-serv/socket.io.js"></script>';
-             includes += '<script type="text/javascript" src="/jelly-serv/nemato.js"></script>';
-             includes += '</head>';
-             chunk = chunk.toString().replace('</head>', includes);
-           }
-        }
-        res.write(chunk, 'binary');
-      })
-      response.addListener("end", function () {
-        res.end();
-      })
-    })
-    req.addListener("data", function (chunk) {
-      proxyRequest.write(chunk, 'binary');
-    })
-    req.addListener("end", function () {
-      proxyRequest.end();
-    })
-  }
-}
-
 // Service communication server
 http.createServer(function (req, res) {
   req.addListener("data", function(chunk) {
     var data = chunk.toString();
     var cmd = JSON.parse(data);
-    
+        
     // Starting up a tentacle session
     if (cmd.meth == "start") {
-      var startURL = "http://jelly.io/jelly-serv/index.html";
+      var startURL = "http://jelly.io/";
       var session = {};
       session.port = port;
       session.tid = uuid();
-      session.frames = {};
+      session.frames = [];
       session.queue = [];
       session.resolve = {};
-      session.live = true;
       port++;
       
-      // Polling loop to dispatch jobs from the tid queue
-      session.dispatch = setInterval(function() {
-        if ((keys(session.frames).length != 0) && 
-          (session.queue.length != 0) && 
-          (session.live)) {
-          
-          session.live = false;
-          
-          var job = session.queue.shift();
-          session.resolve[job.qid] = job;
-          
-          console.log("Taking job "+job.qid);
-          var msg = {meth:"run"};
-          msg.code = job.code;
-          msg.qid = job.qid;
-          
-          var arr = keys(session["frames"]);
-          //allow multiple frame logic
-          var frame = null;
-          if (!job.frame) { frame = session["frames"][arr[0]]; }
-          else { frame = session["frames"][job["frame"]]; }
-          console.log("Sending job"+JSON.stringify(msg)+" to "+arr[0]);
-          frame.send(JSON.stringify(msg));
-        }
-      }, 100);
-      
       // Start the proxy server
-      var server = http.createServer(requestHandler);
+      var server = http.createServer(function (req, res) {
+        var ip = req.connection.remoteAddress;
+        var uri = url.parse(req.url);
+
+        if (uri.port == undefined) {
+          uri.port = {"http:":80,"https:":443}[uri.protocol]
+        }
+        var pathname = uri.search ? uri.pathname + uri.search : uri.pathname;
+
+        //communcation loop
+         if (pathname.indexOf('_jellyfish/poll') != -1) {           
+           if (session.queue.length != 0) {
+             
+             var title = "";
+             try {
+               title = unescape(uri.query.split("=")[1]);
+             } catch(err){}
+ 
+              var j = session.queue[0];
+              
+              if ((j.frame) && (j.frame == title)) {
+                var job = session.queue.shift();
+                session.resolve[job.qid] = job;
+                console.log("Dispatching "+job.meth+" to: "+session.tid);
+                var msg = {meth:"run"};
+                msg.code = job.code;
+                msg.qid = job.qid;
+                finish(req, res, msg);
+              }
+              else if (!j.frame) {
+                var job = session.queue.shift();
+                session.resolve[job.qid] = job;
+                console.log("Dispatching "+job.meth+" to: "+session.tid);
+                var msg = {meth:"run"};
+                msg.code = job.code;
+                msg.qid = job.qid;
+                finish(req, res, msg);
+              }
+              else {
+                finish(req, res, {tid:session.tid});
+              }
+           }
+           
+           finish(req, res, {tid:session.tid});
+         }
+         else if (pathname.indexOf('_jellyfish/result') != -1) {
+           req.addListener("data", function (chunk) {
+             var data = chunk.toString();
+             var msg = JSON.parse(data);
+             
+             console.log("Recording result for: " + JSON.stringify(msg));
+             var job = session.resolve[msg.qid];
+             finish(job.req, job.res, {"result":msg.res});
+           })
+         }
+         //register frames
+         else if (pathname.indexOf('_jellyfish/wake') != -1) {
+           req.addListener("data", function (chunk) {
+             var data = chunk.toString();
+             var msg = JSON.parse(data);
+             
+             console.log("Registering frame: "+"tid:"+ session.tid + " title: "+ msg.title);
+             session.frames.push(msg.title);
+             finish(req, res, {tid:session.tid});
+           })
+         }
+         //unregister frames
+         else if (pathname.indexOf('_jellyfish/sleep') != -1) {
+           console.log("Frame disconnect on TID "+ session.tid);
+           finish(req, res, {tid:session.tid});
+          }
+          else if (pathname.indexOf('_jellyfish/serv') != -1) {
+            //if _jellyfish is involved, we rm the whole path except the file
+            //name and serve it from the static directory
+            var fname = req.url.split("/");
+            req.url = req.url.replace(pathname, "/" + fname[fname.length -1]);
+
+            paperboy
+            .deliver(WEBROOT, req, res)
+            .otherwise(function() {
+              res.writeHead(404, {'Content-Type': 'text/plain'});
+              res.write('Sorry, no paper this morning!');
+              res.close();
+            });
+        }
+        else {
+          // Actual proxying happens here
+          var c = http.createClient(uri.port, uri.hostname);
+          c.on("error", function (e) { console.error("client error "+e.stack) }) 
+
+          // Stop from requesting gzip
+          req.headers['accept-encoding'] = "text/html";
+
+          var proxyRequest = c.request(req.method, pathname, req.headers);
+          proxyRequest.on("error", function (e) { console.error("request error "+e.stack) }) 
+
+          proxyRequest.addListener("response", function (response) {
+            res.writeHead(response.statusCode, response.headers);
+            response.addListener("data", function (chunk) {
+              // modify the html content
+              if (response.headers['content-type'].indexOf("text/html") != -1) {
+                 if (chunk.toString().indexOf('</head>')) {
+                   var includes = '<script type="text/javascript" src="/_jellyfish/serv/jquery-1.4.4.min.js"></script>';
+                   includes += '<script type="text/javascript" src="/_jellyfish/serv/nemato.js"></script>';
+                   includes += '</head>';
+                   chunk = chunk.toString().replace('</head>', includes);
+                 }
+              }
+              res.write(chunk, 'binary');
+            })
+            response.addListener("end", function () {
+              res.end();
+            })
+          })
+          req.addListener("data", function (chunk) {
+            proxyRequest.write(chunk, 'binary');
+          })
+          req.addListener("end", function () {
+            proxyRequest.end();
+          })
+        }
+      });
       
       //this should be a loop to find the next available port
       try {
@@ -167,33 +196,9 @@ http.createServer(function (req, res) {
         session.port++;
         server.listen(session.port);
       }
-      
-      // Startup a socket.io session for this proxy session
-      var socket = io.listen(server);
-      socket.on('connection', function(client) {
-        session.live = true;
-        console.log("Frame Socket connected on TID "+ session.tid);
-        client.on('message', function(message) {
-          var msg = JSON.parse(message);
-          if (msg.meth == "reg") {
-            console.log("Registering frame: "+msg.title);
-            session.frames[msg.title] = client;
-          }
-          else if (msg.meth == "result") {
-            console.log("Received result from "+msg.qid);
-            var job = session.resolve[msg.qid];
-            session.live = true;
-            finish(job.req, job.res, {"result":msg.res});
-          }
-        }) 
-        client.on('disconnect', function() {
-          console.log("Frame Socket disconnect on TID "+ session.tid);
-        }) 
-      });
 
       console.log("Started server for "+session.tid+" on port "+session.port)
       session.server = server;
-      session.socket = socket;
       
       // Launch gchrome
       if (cmd.browser == "chrome") {
@@ -246,18 +251,24 @@ http.createServer(function (req, res) {
     // Get all the frames for a tid
     else if (cmd.meth == "frames") {
       var session = tentacles[cmd.tid];
-      var arr = keys(session["frames"]);
-      finish(req, res, arr);
+      finish(req, res, session.frames);
     }
     // Run javascript!
     else if (cmd.meth == "run") {
-      var nemato = tentacles[cmd.tid];
+      console.log("Adding" + JSON.stringify(cmd))   ;
+      var session = tentacles[cmd.tid];
       var run = {meth:"run"};
       run.code = cmd.code;
+      
+      //if a specific frame was provided
+      if (cmd.frame) {
+        run.frame = cmd.frame;
+      }
+      
       run.req = req;
       run.res = res;
       run.qid = uuid();
-      nemato.queue.push(run);
+      session.queue.push(run);
     }
     // Bad option
     else {
@@ -271,7 +282,6 @@ sys.puts('Jellyfish Server running at http://127.0.0.1:8888/');
 process.on('exit', function () {
   for (var key in tentacles) {
     tentacles[key].browser.stop();
-    tentacles[key].socket.close();
     tentacles[key].server.close();
   }
 });
