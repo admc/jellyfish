@@ -8,6 +8,7 @@ connections = 0;
 
 var r = repl.start("(jellyfish): ");
 r.context.assert = assert;
+r.context.jellyfish = jellyfish;
 r.context.help = function(){ console.log("JellyFish Help")};
 
 net.createServer(function (socket) {
@@ -20,6 +21,6 @@ net.createServer(function (socket) {
   repl.start("(jellyfish): ", socket);
 }).listen(5001);
 
-process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
-});
+// process.on('uncaughtException', function (err) {
+//   console.log('Caught exception: ' + err);
+// });
