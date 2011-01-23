@@ -159,7 +159,7 @@ init = function(b, cb) {
   
   //run raw js
   this.user = function(meth, obj, cb) {
-    var str = "wm.user('"+meth+"',"+JSON.stringify(obj)+")";
+    var str = "wm.ctrl."+meth+"("+JSON.stringify(obj)+")";
     
     var wave = {};
     wave.job = {meth:'run', code:str};

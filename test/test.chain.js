@@ -11,8 +11,12 @@ ff.go("http://www.google.com")
   .js("document.title", function(o) {
     assert.equal(o.result,"Google")
   })
-  .user("type", { name:'q', text:'moo'})
-  .user("click", { name:'btnG' })
+  .user("type", { name:'q', text:'moo'}, function(o){
+    console.log(o.result);
+  })
+  .user("click", { name:'btnG' }, function(o){
+    console.log(o.result);
+  })
   .jsfile("./test.js", function(o) {
     console.log(o.result)
   })
