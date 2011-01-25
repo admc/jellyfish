@@ -214,7 +214,7 @@ http.createServer(function (req, res) {
       // Launch gchrome
       if (cmd.browser == "chrome") {
         session.browser = new browsers.chrome();
-        session.browser.start(function(b){
+        session.browser.start(function(b) {
           b.on('exit', function (code) {
             console.log('Killed browser with TID: ' + session.tid);
           });
@@ -223,7 +223,7 @@ http.createServer(function (req, res) {
       // Launch firefox
       else if (cmd.browser == "firefox") {
         session.browser = new browsers.firefox();
-        session.browser.start(function(b){
+        session.browser.start(function(b) {
           b.on('exit', function (code) {
             console.log('Killed browser with TID: ' + session.tid);
           });
