@@ -1,3 +1,8 @@
+Dependencies
+
+paperboy
+request
+
 Client API
 
 Instantiate - /firefox/chrome/
