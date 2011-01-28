@@ -1,5 +1,5 @@
 var assert = require('assert')
-  , jellyfish = require('../client/jellyfish');
+  , jellyfish = require('../client/jellyfish').jellyfish;
 
 var test = function(b) {
   b.go("http://www.google.com")
@@ -17,8 +17,8 @@ var test = function(b) {
 }
 
 for (var x=0;x<4;x++) {
-  var b = new jellyfish.init("firefox");
-  var c = new jellyfish.init("chrome");
+  var b = new jellyfish("firefox");
+  var c = new jellyfish("chrome");
 
   b.on('command', function(cmd, args){
     console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);

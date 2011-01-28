@@ -28,7 +28,7 @@ var d = function(obj, func) {
     });
 };
 
-init = function(b, cb) {
+jellyfish = function(b, cb) {
   var _this = this;
   this.server = 'http://localhost:8888';
   this.tid = null;
@@ -182,7 +182,7 @@ init = function(b, cb) {
   if (b) { this.start(b, cb); }
 };
 
-EventEmitter.call(init);
-init.prototype.__proto__ = EventEmitter.prototype;
+EventEmitter.call(jellyfish);
+jellyfish.prototype.__proto__ = EventEmitter.prototype;
 
-exports.init = init;
+exports.jellyfish = jellyfish;

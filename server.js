@@ -4,7 +4,11 @@ var sys = require('sys')
   , path = require('path')
   , paperboy = require('paperboy')
   , WEBROOT = path.join(path.dirname(__filename), 'static')
-  , browsers = require('./lib/browsers');
+  , jsdom = require("jsdom").jsdom
+  , Script = process.binding('evals').Script
+  , request = require('request')
+  , browsers = require('./lib/browsers')
+  ;
   
 //Global registry of browsers
 var tentacles = {};
@@ -213,6 +217,7 @@ http.createServer(function (req, res) {
       
       // Launch gchrome
       if (cmd.browser == "chrome") {
+        console.log('Initializing chrome: ' + session.tid);
         session.browser = new browsers.chrome();
         session.browser.start(function(b) {
           b.on('exit', function (code) {
@@ -222,6 +227,7 @@ http.createServer(function (req, res) {
       }
       // Launch firefox
       else if (cmd.browser == "firefox") {
+        console.log('Initializing firefox: ' + session.tid);
         session.browser = new browsers.firefox();
         session.browser.start(function(b) {
           b.on('exit', function (code) {
@@ -230,9 +236,19 @@ http.createServer(function (req, res) {
         }, startURL, session.port)        
       }
       else {
-        //probably default to a tobi browser
-        server.close();
-        return;
+        console.log('Initializing jsdom: ' + session.tid);
+        session.jsdom = true;
+        request({
+          uri: startURL,
+          method: 'GET'
+        }, function(err, resp, code) {
+            var document = jsdom(code);
+            var window = document.createWindow();
+            session.sandbox = {
+              document: document,
+              window: window
+            }
+        });
       }
       
       tentacles[session.tid] = session;
@@ -266,8 +282,19 @@ http.createServer(function (req, res) {
     }
     // Run javascript!
     else if (cmd.meth == "run") {
-      console.log("Adding " + JSON.stringify(cmd))   ;
       var session = tentacles[cmd.tid];
+      
+      //if we have an in node browser, run the code in the sandbox context
+      if (session.jsdom) {
+        //if code changes window.location, parse that and get that new page first
+        console.log("Running " + JSON.stringify(cmd) + " in JSDOM sandbox.");
+        var evalReturn = Script.runInNewContext(cmd.code, session.sandbox);
+        finish(req, res, {"result":evalReturn});
+        return;
+      }
+      
+      console.log("Adding " + JSON.stringify(cmd));
+      //otherwise we have a real browser so we use the queue
       var run = {meth:"run"};
       run.code = cmd.code;
       

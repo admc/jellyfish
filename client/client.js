@@ -1,10 +1,10 @@
 var net = require('net')
     , repl = require('repl')
     , assert = require('assert')
-    , jellyfish = require('./jellyfish');
+    , jellyfish = require('./jellyfish').jellyfish
+    ;
 
 connections = 0;
-
 
 var r = repl.start("(jellyfish): ");
 r.context.assert = assert;
@@ -21,6 +21,6 @@ net.createServer(function (socket) {
   repl.start("(jellyfish): ", socket);
 }).listen(5001);
 
-// process.on('uncaughtException', function (err) {
-//   console.log('Caught exception: ' + err);
-// });
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+});

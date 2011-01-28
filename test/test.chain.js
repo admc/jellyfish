@@ -1,7 +1,7 @@
 var assert = require('assert')
-  , jellyfish = require('../client/jellyfish');
+  , jellyfish = require('../client/jellyfish').jellyfish;
 
-var ff = new jellyfish.init("firefox");
+var ff = new jellyfish("firefox");
 
 ff.on('command', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
