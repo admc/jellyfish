@@ -68,7 +68,7 @@ $jfQ(document).ready(function(){
   }, 'json');
   
   window.alert = function(str) {
-    return "Alerted: " + str;
+    return "alerted: " + str;
   }
   
   $jfQ(document.body).append('<script type="text/javascript" src="/_jellyfish/serv/user.js"></script>')

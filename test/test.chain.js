@@ -1,7 +1,7 @@
 var assert = require('assert')
-  , jellyfish = require('../client/jellyfish').jellyfish;
+  , jellyfish = require('../lib/main');
 
-var ff = new jellyfish("firefox");
+var ff = jellyfish.createFirefox();
 
 ff.on('command', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
@@ -22,7 +22,5 @@ ff.go("http://www.google.com")
   })
   .jsurl("http://jelly.io/test.js", function(o) { 
     console.log(o.result);
-  })
-  .stop(function(o) {
     process.exit();
-  });
+  })

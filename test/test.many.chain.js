@@ -1,5 +1,5 @@
 var assert = require('assert')
-  , jellyfish = require('../client/jellyfish').jellyfish;
+  , jellyfish = require('../lib/main');
 
 var test = function(b) {
   b.go("http://www.google.com")
@@ -12,23 +12,44 @@ var test = function(b) {
     .jsfile("./test.js", function(o) {
       console.log(o.result)
     })
-    .jsurl("http://jelly.io/test.js")
-    .stop();
+    .jsurl("http://jelly.io/test.js", function(o){
+      b.stop();
+    })
 }
 
 for (var x=0;x<4;x++) {
-  var b = new jellyfish("firefox");
-  var c = new jellyfish("chrome");
+  var b = jellyfish.createFirefox();
 
   b.on('command', function(cmd, args){
     console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
   });
   
+  b.on('output', function(cmd, args){
+    console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+  });
+  test(b);
+  
+  var c = jellyfish.createChrome();
+    
   c.on('command', function(cmd, args){
     console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
   });
-
-  test(b);
-  test(c);
   
+  c.on('output', function(cmd, args){
+     console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+   });
+  
+  test(c);
 }
+
+// Nice cleanup
+process.on('exit', function () {
+  for (var key in tentacles) {
+    jellyfish.tentacles[key].browser.stop();
+    jellyfish.tentacles[key].server.close();
+  }
+});
+
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+});
