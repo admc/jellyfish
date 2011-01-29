@@ -1,0 +1,21 @@
+{ "name" : "jellyfish"
+, "description" : "A framework for launching environments and running JS"
+, "tags" : ["http", "simple", "util", "utility"]
+, "version" : "0.0.1"
+, "author" : "Adam Christian <adam.christian@gmail.com>"
+, "repository" :
+  { "type" : "git"
+  , "url" : "http://github.com/admc/jellyfish.git"
+  }
+, "bugs" :
+  { "web" : "http://github.com/admc/jellyfish/issues" }
+, "engines" : ["node"]
+, "main" : "./lib/main"
+, "dependencies" : 
+  { "jsdom" : "*"
+  , "paperboy" : "*"
+  , "request" : "*"
+  }
+, "bin" : { "jellyfish" : "./lib/bin.js" }
+, "directories" : { "lib" : "./lib" }
+}
