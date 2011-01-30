@@ -1,4 +1,8 @@
 var $jfQ = jQuery.noConflict();
+$jfQ.getScript("/_jellyfish/serv/user-xpath.js");
+$jfQ.getScript("/_jellyfish/serv/user-lookup.js");
+$jfQ.getScript("/_jellyfish/serv/user-events.js");
+$jfQ.getScript("/_jellyfish/serv/user-meth.js");
 
 function run (data) {
   var res = null;
@@ -69,7 +73,5 @@ $jfQ(document).ready(function(){
   
   window.alert = function(str) {
     return "alerted: " + str;
-  }
-  
-  $jfQ(document.body).append('<script type="text/javascript" src="/_jellyfish/serv/user.js"></script>')
+  } 
 });

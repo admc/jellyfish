@@ -17,7 +17,7 @@ var test = function(b) {
     })
 }
 
-for (var x=0;x<4;x++) {
+for (var x=0;x<8;x++) {
   var b = jellyfish.createFirefox();
 
   b.on('command', function(cmd, args){
@@ -41,14 +41,6 @@ for (var x=0;x<4;x++) {
   
   test(c);
 }
-
-// Nice cleanup
-process.on('exit', function () {
-  for (var key in tentacles) {
-    jellyfish.tentacles[key].browser.stop();
-    jellyfish.tentacles[key].server.close();
-  }
-});
 
 process.on('uncaughtException', function (err) {
   console.log('Caught exception: ' + err);

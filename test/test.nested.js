@@ -1,19 +1,15 @@
 var assert = require('assert')
-  , jellyfish = require('../client/jellyfish').jellyfish;
+  , jellyfish = require('../lib/main');
 
-var ff = new jellyfish();
+var ff = jellyfish.createFirefox();
 
 ff.on('command', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
 });
 
-ff.start("firefox",function(o) {
-  this.go("http://www.google.com", function(o) {
-    this.js("document.title", function(o) {
-      assert.equal(o.result,"Google");
-      this.stop(function() {
-        process.exit();
-      })
-    })
+ff.go("http://www.google.com", function(o) {
+  ff.js("document.title", function(o) {
+    assert.equal(o.result,"Google");
+    process.exit();
   })
 })
