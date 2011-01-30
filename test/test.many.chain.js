@@ -4,42 +4,47 @@ var assert = require('assert')
 var test = function(b) {
   b.go("http://www.google.com")
     .js("document.title", function(o) {
-      console.log(o.result);
       assert.equal(o.result,"Google")
     })
-    .user("type", { name:'q', text:'moo'})
-    .user("click", { name:'btnG' })
+    .user("type", { query:'input[name="q"]', text:'moo'}, function(o) {
+      console.log(o.result);
+    })
+    .js("$jfQ('input[name=\"q\"]').val()", function(o) {
+      console.log(o.result);
+    })
+    .user("click", { query:'input[name="btnG"]' }, function(o) {
+      console.log(o.result);
+    })
     .jsfile("./test.js", function(o) {
       console.log(o.result)
     })
-    .jsurl("http://jelly.io/test.js", function(o){
+    .jsurl("http://jelly.io/test.js", function(o) { 
       b.stop();
     })
 }
 
-for (var x=0;x<8;x++) {
-  var b = jellyfish.createFirefox();
-
-  b.on('command', function(cmd, args){
-    console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-  });
-  
-  b.on('output', function(cmd, args){
-    console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-  });
-  test(b);
-  
-  var c = jellyfish.createChrome();
+for (var x=0;x<5;x++) {
+    var b = jellyfish.createFirefox();
+    var c = jellyfish.createChrome();
+    test(b);
+    test(c);
     
-  c.on('command', function(cmd, args){
-    console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-  });
+    b.on('command', function(cmd, args){
+      console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+    });
   
-  c.on('output', function(cmd, args){
-     console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-   });
+    b.on('output', function(cmd, args){
+      console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+    });
   
-  test(c);
+    
+    c.on('command', function(cmd, args){
+      console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+    });
+  
+    c.on('output', function(cmd, args){
+       console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+     });
 }
 
 process.on('uncaughtException', function (err) {

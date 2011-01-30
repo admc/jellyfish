@@ -52,6 +52,10 @@ var elementslib = new function(){
       s = 'Looking up label '+ p.label;
       element = this.Element.LABEL(p.label);
     }
+    if (typeof p.query != "undefined") {
+      s = 'Looking up query '+ p.query;
+      element = $jfQ(p.query)[0];
+    }
     //scroll so that the element is in view
     if (element) { 
       //element.scrollIntoView(); 

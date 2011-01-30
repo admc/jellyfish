@@ -1,4 +1,5 @@
 var user = {};
+user.asserts = {};
 
 /**
 * Select an option from a Select element by either value or innerHTML

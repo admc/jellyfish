@@ -1,4 +1,5 @@
 var $jfQ = jQuery.noConflict();
+
 $jfQ.getScript("/_jellyfish/serv/user-xpath.js");
 $jfQ.getScript("/_jellyfish/serv/user-lookup.js");
 $jfQ.getScript("/_jellyfish/serv/user-events.js");
@@ -12,16 +13,26 @@ function run (data) {
     res = err;
   }
   return res;
-}
+};
 
 function waitForMsg() {
+  try {
+    if (!user) { return };
+  } catch(err){
+    return;
+  }
+  
   $jfQ.ajax({
     type: "GET",
-    url: "/_jellyfish/poll?title="+document.title,
+    url: "/_jellyfish/poll",
+    data: {"title":document.title},
     async: false,
-    cache: true,
+    cache: false,
     timeout: 50000,
-    success: function(obj) {      
+    dataType: 'json',
+    success: function(obj) {
+      window.jfrunning = true;
+      
       if (obj.meth == "run") {
         var res = run(obj.code);
         
@@ -39,21 +50,15 @@ function waitForMsg() {
         });
       }
       
-      setTimeout(
-        'waitForMsg()',
-        1000
-      );
+      setTimeout('waitForMsg()', 1000);
     },
-    error: function(XMLHttpRequest, textStatus, errorThrown){
-      console.log("ERROR")
-      setTimeout(
-        'waitForMsg()',
-        "15000");
+    error: function(XMLHttpRequest, textStatus, errorThrown) {
+      setTimeout('waitForMsg()', "15000");
     },
   });
 };
 
-$jfQ(document).ready(function(){
+$jfQ(document).ready(function() {
   var data = {};
   data.title = window.document.title;
   data.url = window.location.href;
@@ -69,9 +74,15 @@ $jfQ(document).ready(function(){
       $jfQ.post('/_jellyfish/die', JSON.stringify(data), function(data) {});
     }
     waitForMsg();
+    setTimeout(function() {
+      if (!window.jfrunning) {
+        waitForMsg();
+      }
+    }, 2000);
+    
   }, 'json');
   
   window.alert = function(str) {
     return "alerted: " + str;
-  } 
+  }
 });
