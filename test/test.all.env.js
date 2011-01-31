@@ -18,7 +18,7 @@ var test = function(b) {
     .user("type", { query:'input[name="q"]', text:'moo'}, function(o) {
       console.log(o.result);
     })
-    .js("$jfQ('input[name=\"q\"]').val()", function(o) {
+    .js("$jfQ('input[name=\"q\"]')[0].value", function(o) {
       console.log(o.result);
     })
     .user("click", { query:'input[name="btnG"]' }, function(o) {
