@@ -1,5 +1,5 @@
 var assert = require('assert')
-  , jellyfish = require('../lib/main');
+  , jellyfish = require('jellyfish');
 
 var ff = jellyfish.createFirefox();
 
@@ -16,6 +16,7 @@ ff.go("http://www.google.com")
   })
   .user("type", { query:'input[name="q"]', text:'moo'}, function(o) {
     console.log(o.result);
+    assert.equal(o.result, true)
   })
   .js("$jfQ('input[name=\"q\"]')[0].value", function(o) {
     console.log(o.result);
@@ -27,6 +28,8 @@ ff.go("http://www.google.com")
     console.log(o.result)
   })
   .jsurl("http://jelly.io/test.js", function(o) { 
-    console.log(o);
-    process.exit();
+    console.log(o.result);
+    ff.stop(function(){
+      process.exit();
+    });
   })

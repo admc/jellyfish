@@ -15,7 +15,7 @@
   { "jsdom" : "*"
   , "paperboy" : "*"
   , "request" : "*"
-  , "zombie", : "*"
+  , "zombie" : "*"
   }
 , "bin" : { "jellyfish" : "./lib/bin.js" }
 , "directories" : { "lib" : "./lib" }

@@ -1,5 +1,5 @@
 var assert = require('assert')
-  , jellyfish = require('../lib/main');
+  , jellyfish = require('jellyfish');
 
 var done = [];
 

@@ -1,5 +1,5 @@
 var assert = require('assert')
-  , jellyfish = require('../lib/main');
+  , jellyfish = require('jellyfish');
 
 var test = function(b) {
   b.go("http://www.google.com")

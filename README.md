@@ -1,81 +1,89 @@
-Dependencies
+# Jellyfish -- Browser launcher and Javascript execution engine.
 
-paperboy
-request
+## Install
 
-Client API
+<pre>
+  npm install jellyfish
+</pre>
 
-Instantiate - /firefox/chrome/
+Or from source:
 
-ff = new jellyfish("firefox")
+<pre>
+  git clone git://github.com/admc/jellyfish.git 
+  cd jellyfish
+  npm link .
+</pre>
 
-or
+## Platforms
+  MacOSX 10.6
+  Ubuntu 10.x
 
-ff = new jellyfish();
-ff.start("firefox")
+## Browsers
+  Firefox 3.x, 4b
+  Google Chrome
+  Zombie (headless node.js browser)
+  
+## Usage
 
-Run
+npm require
+<pre>
+  var jellyfish = require('jellyfish'),
+      , assert = require('assert');
+</pre>
 
-raw javascript: 
-ff.js("$jfQ(document.body).html()", function(o) {
-  console.log(o.result)
-})
+init a browser (createFirefox, createChrome, createZombie)
+<pre>
+  var browser = jellyfish.createFirefox();
+</pre>
 
-local script: 
-ff.jsfile("./test.js", function(o){
-  console.log(o.result)
-})
+goto a web site
+<pre>
+  browser.go("http://www.jelly.io")
+</pre>
 
-remote script: 
-ff.jsurl("http://www.adamchristian.com/test.js", function(o) { console.log(o.result)})
+verify the title
+<pre>
+  .js("document.title", function(o) {
+    assert.equal(o.result, "Jelly.io: Jellyfish Home")
+  })
+</pre>
 
-Assert
+run some local javascript
+<pre>
+  .jsfile("./test.js", function(o) {
+    assert.equal(o.result, "alerted: Jellyfish local file loaded succesfully!")
+  })
+</pre>
 
-ff.js("document.title", function(o) {
-  assert.equal(o.result,"Jellyfish")
-})
+run some remote javascript, stop the browser, then exit
+<pre>
+  .jsurl("http://jelly.io/test.js", function(o) { 
+    assert.equal(o.result, "alerted: Successfully ran some remote javascript in Jellyfish!")
+    browser.stop(function() {
+      process.exit();
+    })
+  })
+</pre>
 
-Go - Go to a URL
+## User Simulation
 
-ff.go("http://jelly.io")
-
-Frames - See all the frames registered for that 
-
-ff.frames()
-
-jQuery
-
-You can always use the injected jQuery, called $jfQ
-
-
-User interactions
-
-ff.user("type", {text:'moo', name:'q'})
-ff.user("click", {name:'btnG'})
-
-also alt + t gives you a JS runner
-
-and you can paste the following test in there to run it:
-
-wm.user('type',{'text':'testing', 'name':'q'});
-wm.user('waits.sleep', {'ms':5000});
-wm.user('type',{'text':'numbertwo', 'name':'q'});
-wm.user('asserts.assertValue', {'name':'q', 'validator':'numbertwo'})
-wm.user('waits.sleep', {'ms':3000});
-wm.user('type',{'text':'finally', 'name':'q'});
-wm.user('asserts.assertValue', {'name':'q', 'validator':'finally'}))
-
-
-----------------
-
-Raw API
-
-curl -X PUT http://127.0.0.1:8888/ -d '{"meth":"start", "browser":"chrome"}'
-
-curl -X PUT http://127.0.0.1:8888/ -d '{"meth":"stop", "tid":"cb8b34ef-da4b-463c-b400-bb14c1882ca2"}'
-
-curl -X PUT http://127.0.0.1:8888/ -d '{"meth":"frames", "tid":"977466a0-2e2f-4902-a5fc-eb4a8d261a98"}'
-
-curl -X PUT http://127.0.0.1:8888/ -d '{"meth":"list"}'  
-
-curl -X PUT http://127.0.0.1:8888/ -d '{"meth":"run", "code":"window.location.href=\"http://www.google.com\";","tid":"78565d31-aaeb-4256-83c5-7f08641f5aeb"}'
+<pre>
+  var browser = jellyfish.(createFirefox, createChrome, createZombie)();
+  browser.go("http://www.google.com")
+    .js("document.title", function(o) {
+      assert.equal(o.result,"Google")
+    })
+    .user("type", { query:'input[name="q"]', text:'test string'}, function(o) {
+      assert.equal(o.result, true);
+    })
+    .js("$jfQ('input[name=\"q\"]')[0].value", function(o) {
+      assert.equal(o.result, 'test string');
+    })
+    .user("click", { query:'input[name="btnG"]' }, function(o) {
+      assert.equal(o.result, true);
+      
+      browser.stop(function() {
+        process.exit();
+      });
+    })
+</pre>
