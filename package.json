@@ -1,6 +1,6 @@
 { "name" : "jellyfish"
 , "description" : "A framework for launching environments and running JS"
-, "tags" : ["http", "simple", "util", "utility"]
+, "tags" : ["web", "automation", "browser", "javascript"]
 , "version" : "0.0.1"
 , "author" : "Adam Christian <adam.christian@gmail.com>"
 , "repository" :
@@ -15,6 +15,7 @@
   { "jsdom" : "*"
   , "paperboy" : "*"
   , "request" : "*"
+  , "zombie", : "*"
   }
 , "bin" : { "jellyfish" : "./lib/bin.js" }
 , "directories" : { "lib" : "./lib" }

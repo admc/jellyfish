@@ -402,6 +402,7 @@ if (/Safari[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
     // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
     //Another wierd chrome thing?
     events.triggerEvent(element, 'change', true);
+    return true;
   };
 
 };
@@ -474,6 +475,7 @@ if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
      // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
      //Another wierd chrome thing?
      events.triggerEvent(element, 'change', true);
+     return true;
    };
 };    
 

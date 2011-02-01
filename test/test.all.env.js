@@ -35,35 +35,35 @@ var test = function(b) {
 
 var firefox = jellyfish.createFirefox();
 var chrome = jellyfish.createChrome();
-var jsd = jellyfish.createJSDOM();
+var zombie = jellyfish.createZombie();
 
 test(firefox);
 test(chrome);
-test(jsd);
+test(zombie);
 
 firefox.on('command', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
 });
 
-firefox.on('output', function(cmd, args){
-  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
+// firefox.on('output', function(cmd, args){
+//   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+// });
 
 chrome.on('command', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
 });
 
-chrome.on('output', function(cmd, args){
-   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
+// chrome.on('output', function(cmd, args){
+//    console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+// });
 
-jsd.on('command', function(cmd, args){
+zombie.on('command', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
 });
 
-jsd.on('output', function(cmd, args){
-   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
+// zombie.on('output', function(cmd, args){
+//    console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+// });
 
 process.on('uncaughtException', function (err) {
   console.log('Caught exception: ' + err);

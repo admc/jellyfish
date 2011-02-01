@@ -15,7 +15,7 @@ function run (data) {
   return res;
 };
 
-function waitForMsg() {
+function waitForJellyMsg() {
   try {
     if (!user) { return };
   } catch(err){
@@ -50,10 +50,10 @@ function waitForMsg() {
         });
       }
       
-      setTimeout('waitForMsg()', 1000);
+      setTimeout('waitForJellyMsg()', 1000);
     },
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      setTimeout('waitForMsg()', "15000");
+      setTimeout('waitForJellyMsg()', "15000");
     },
   });
 };
@@ -73,10 +73,10 @@ $jfQ(document).ready(function() {
       
       $jfQ.post('/_jellyfish/die', JSON.stringify(data), function(data) {});
     }
-    waitForMsg();
+    waitForJellyMsg();
     setTimeout(function() {
       if (!window.jfrunning) {
-        waitForMsg();
+        waitForJellyMsg();
       }
     }, 2000);
     
