@@ -1,1 +1,1 @@
-alert("Jellyfish local file loaded succesfully!");
+alert("Jellyfish local file loaded successfully!");

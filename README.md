@@ -51,14 +51,14 @@ verify the title
 run some local javascript
 <pre>
   .jsfile("./test.js", function(o) {
-    assert.equal(o.result, "alerted: Jellyfish local file loaded succesfully!")
+    assert.equal(o.result, "alerted: Jellyfish local file loaded successfully!")
   })
 </pre>
 
 run some remote javascript, stop the browser, then exit
 <pre>
   .jsurl("http://jelly.io/test.js", function(o) { 
-    assert.equal(o.result, "alerted: Successfully ran some remote javascript in Jellyfish!")
+    assert.equal(o.result, "alerted: Jellyfish remote file loaded successfully!")
     browser.stop(function() {
       process.exit();
     })
