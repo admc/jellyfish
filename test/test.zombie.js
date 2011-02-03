@@ -2,6 +2,7 @@ var assert = require('assert')
   , jellyfish = require('jellyfish');
 
 var jd = jellyfish.createZombie();
+//jd.couch();
 
 jd.on('command', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
@@ -25,5 +26,7 @@ jd.go("http://www.google.com")
   })
   .jsurl("http://jelly.io/test.js", function(o) { 
     console.log(o.result);
-    process.exit();
+    jd.stop(function() {
+      process.exit();
+    })
   })

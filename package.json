@@ -12,8 +12,7 @@
 , "engines" : ["node"]
 , "main" : "./lib/main"
 , "dependencies" : 
-  { "jsdom" : "*"
-  , "paperboy" : "*"
+  { "paperboy" : "*"
   , "request" : "*"
   , "zombie" : "*"
   }

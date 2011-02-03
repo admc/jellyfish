@@ -2,13 +2,14 @@ var assert = require('assert')
   , jellyfish = require('jellyfish');
 
 var chrome = jellyfish.createChrome();
+//chrome.couch();
 
 chrome.on('command', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
 });
-// chrome.on('output', function(cmd, args){
-//   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-// });
+chrome.on('output', function(cmd, args){
+  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+});
 
 chrome.go("http://www.google.com")
   .js("document.title", function(o) {
@@ -28,5 +29,7 @@ chrome.go("http://www.google.com")
   })
   .jsurl("http://jelly.io/test.js", function(o) { 
     console.log(o);
-    process.exit();
+    chrome.stop(function() {
+      process.exit();
+    });
   })

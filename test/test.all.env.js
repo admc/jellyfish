@@ -3,13 +3,6 @@ var assert = require('assert')
 
 var done = [];
 
-var setDone = function(b) {
-  done.push(b);
-  if (done.length == 2) {
-    process.exit();
-  }
-};
-
 var test = function(b) {
   b.go("http://www.google.com")
     .js("document.title", function(o) {
@@ -29,7 +22,6 @@ var test = function(b) {
     })
     .jsurl("http://jelly.io/test.js", function(o) { 
       b.stop();
-      setDone(b);
     });
 };
 
