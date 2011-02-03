@@ -1,7 +1,7 @@
 { "name" : "jellyfish"
 , "description" : "A framework for launching environments and running JS"
 , "tags" : ["web", "automation", "browser", "javascript"]
-, "version" : "0.0.1"
+, "version" : "0.0.2"
 , "author" : "Adam Christian <adam.christian@gmail.com>"
 , "repository" :
   { "type" : "git"
