@@ -17,18 +17,15 @@ npm link .
 ## Platforms
 MacOSX 10.6<br>
 Ubuntu 10.x
-
 ## Browsers
 Firefox 3.x, 4b <br>
 Google Chrome <br>
 Zombie (headless node.js browser)
-  
 ## Usage
-
 npm require
 <pre>
 var jellyfish = require('jellyfish'),
-    , assert = require('assert');
+  , assert = require('assert');
 </pre>
 
 init a browser (createFirefox, createChrome, createZombie)
