@@ -24,28 +24,19 @@ var test = function(b) {
 }
 
 for (var x=0;x<5;x++) {
-    var b = jellyfish.createFirefox();
-    var c = jellyfish.createChrome();
-    test(b);
-    test(c);
-    
-    b.on('command', function(cmd, args){
-      console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-    });
-  
-    b.on('output', function(cmd, args){
-      console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-    });
-  
-    c.on('command', function(cmd, args){
-      console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-    });
-  
-    c.on('output', function(cmd, args){
-      console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-    });
-}
+  var browsers = [];
+  browsers.push(jellyfish.createFirefox());
+  browsers.push(jellyfish.createChrome());
+  browsers.push(jellyfish.createZombie());
 
-process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
-});
+  browsers.forEach(function(o) {
+    test(o);
+    o.on('command', function(cmd, args){
+      console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+    });
+
+    o.on('output', function(cmd, args){
+      console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+    });
+  });
+}

@@ -20,46 +20,24 @@ var test = function(b) {
     .jsfile("./test.js", function(o) {
       console.log(o.result);
     })
-    .jsurl("http://jelly.io/test.js", function(o) { 
+    .jsurl("http://jelly.io/test.js", function(o) {
+      console.log(o.result);
       b.stop();
     });
 };
 
-var firefox = jellyfish.createFirefox();
-firefox.couch();
-var chrome = jellyfish.createChrome();
-chrome.couch()
-var zombie = jellyfish.createZombie();
-zombie.couch();
+var browsers = [];
+browsers.push(jellyfish.createFirefox());
+browsers.push(jellyfish.createChrome());
+browsers.push(jellyfish.createZombie());
 
-test(firefox);
-test(chrome);
-test(zombie);
-
-firefox.on('command', function(cmd, args){
-  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
-
-firefox.on('output', function(cmd, args){
-  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
-
-chrome.on('command', function(cmd, args){
-  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
-
-chrome.on('output', function(cmd, args){
+browsers.forEach(function(o) {
+  o.couch();
+  test(o);
+  o.on('command', function(cmd, args){
    console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
-
-zombie.on('command', function(cmd, args){
-  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
-
-zombie.on('output', function(cmd, args){
+  });
+  o.on('output', function(cmd, args){
    console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
-
-process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
+  });
 });
