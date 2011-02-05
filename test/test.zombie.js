@@ -8,6 +8,10 @@ jd.on('command', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
 });
 
+jd.on('output', function(cmd, args){
+  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+});
+
 jd.go("http://www.google.com")
   .js("document.title", function(o) {
     assert.equal(o.result,"Google")

@@ -2,7 +2,6 @@ var assert = require('assert')
   , jellyfish = require('jellyfish');
 
 var chrome = jellyfish.createChrome();
-//chrome.couch();
 
 chrome.on('command', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
