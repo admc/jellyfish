@@ -23,7 +23,7 @@ var test = function(b) {
     })
 }
 
-for (var x=0;x<5;x++) {
+for (var x=0;x<2;x++) {
   var browsers = [];
   browsers.push(jellyfish.createFirefox());
   browsers.push(jellyfish.createChrome());
