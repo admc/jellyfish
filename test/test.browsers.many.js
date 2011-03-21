@@ -23,11 +23,13 @@ var test = function(b) {
     })
 }
 
-for (var x=0;x<3;x++) {
+for (var x=0;x<2;x++) {
   var browsers = [];
-  browsers.push(jellyfish.createFirefox());
-  browsers.push(jellyfish.createChrome());
-  browsers.push(jellyfish.createZombie());
+  var url = "http://www.jelly.io";
+
+  browsers.push(jellyfish.createFirefox(url));
+  browsers.push(jellyfish.createChrome(url));
+  browsers.push(jellyfish.createZombie(url));
 
   browsers.forEach(function(o) {
     test(o);

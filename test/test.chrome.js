@@ -27,7 +27,7 @@ chrome.go("http://www.google.com")
     console.log(o.result)
   })
   .jsurl("http://jelly.io/test.js", function(o) { 
-    console.log(o);
+    console.log(o.result);
     chrome.stop(function() {
       process.exit();
     });
