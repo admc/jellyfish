@@ -1,10 +1,5 @@
 var $jfQ = jQuery.noConflict();
 
-$jfQ.getScript("/_jellyfish/serv/user-xpath.js");
-$jfQ.getScript("/_jellyfish/serv/user-lookup.js");
-$jfQ.getScript("/_jellyfish/serv/user-events.js");
-$jfQ.getScript("/_jellyfish/serv/user-meth.js");
-
 function run (data) {
   var res = null;
   try {
@@ -45,7 +40,7 @@ function waitForJellyMsg() {
           type: 'POST',
           url: '/_jellyfish/result',
           data: JSON.stringify(rObj),
-          success: function(o){},
+          success: function(o) {},
           dataType: 'json'
         });
       }
@@ -72,17 +67,23 @@ $jfQ(document).ready(function() {
       data.agent = navigator.userAgent;
       
       $jfQ.post('/_jellyfish/die', JSON.stringify(data), function(data) {});
-    }
+    };
+
     waitForJellyMsg();
     setTimeout(function() {
       if (!window.jfrunning) {
         waitForJellyMsg();
       }
-    }, 2000);
+    }, 5000);
     
   }, 'json');
   
   window.alert = function(str) {
     return "alerted: " + str;
-  }
+  };
 });
+
+$jfQ.getScript("/_jellyfish/serv/user-xpath.js");
+$jfQ.getScript("/_jellyfish/serv/user-lookup.js");
+$jfQ.getScript("/_jellyfish/serv/user-events.js");
+$jfQ.getScript("/_jellyfish/serv/user-meth.js");
