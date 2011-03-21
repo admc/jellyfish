@@ -8,7 +8,7 @@ var test = function(b) {
     .js("document.title", function(o) {
       assert.equal(o.result,"Google");
     })
-    .user("type", { query:'input[name="q"]', text:'moo'}, function(o) {
+    .user("type", { query:'input[name="q"]', text:'jellyfish'}, function(o) {
       console.log(o.result);
     })
     .js("$jfQ('input[name=\"q\"]')[0].value", function(o) {
