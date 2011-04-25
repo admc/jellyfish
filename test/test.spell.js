@@ -55,22 +55,21 @@ fBot.js("window.resizeTo(400, 10)")
       sBot.js("window.resizeTo(500, 10)")
         .js("window.moveTo(650, 600)")  
         .js("document.body.innerHTML = ''")
-        .js("document.getElementsByTagName('html')[0].style.background = 'lightgray'")
+        .js("document.getElementsByTagName('html')[0].style.background = 'lightgray'");
 
       var sRight = jellyfish.createFirefox();
       browsers.push(sRight);
       sRight.js("window.resizeTo(10, 300)")
         .js("window.moveTo(1050, 300)")
         .js("document.body.innerHTML = ''")
-        .js("document.getElementsByTagName('html')[0].style.background = 'lightgray'")
-      
-      //wait 10 seconds and kill all the browser instances
-      setTimeout(function() {
-        for (b in browsers) {
-          browsers[b].stop();
-        }
-      }, 10000);
-      
+        .js("document.getElementsByTagName('html')[0].style.background = 'lightgray'", function(o) {
+          //wait 10 seconds and kill all the browser instances
+          setTimeout(function() {
+            for (b in browsers) {
+              browsers[b].stop();
+            }
+          }, 10000);
+        });
     }, 10000)
     
   })
