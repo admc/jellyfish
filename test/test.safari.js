@@ -1,18 +1,16 @@
 var assert = require('assert')
   , jellyfish = require('jellyfish');
 
-var jd = jellyfish.createZombie("http://www.google.com");
-//jd.couch();
+var safari = jellyfish.createSafari();
 
-jd.on('command', function(cmd, args){
+safari.on('command', function(cmd, args){
+  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
+});
+safari.on('output', function(cmd, args){
   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
 });
 
-jd.on('output', function(cmd, args){
-  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
-
-jd.go("http://www.google.com")
+safari.go("http://www.google.com")
   .js("document.title", function(o) {
     assert.equal(o.result,"Google")
   })
@@ -30,7 +28,7 @@ jd.go("http://www.google.com")
   })
   .jsurl("http://jelly.io/test.js", function(o) { 
     console.log(o.result);
-    jd.stop(function() {
+    safari.stop(function() {
       process.exit();
-    })
+    });
   })

@@ -27,9 +27,11 @@ var test = function(b) {
 };
 
 var browsers = [];
-browsers.push(jellyfish.createFirefox());
-browsers.push(jellyfish.createChrome());
-browsers.push(jellyfish.createZombie());
+var url = "http://www.google.com"
+browsers.push(jellyfish.createFirefox(url));
+browsers.push(jellyfish.createChrome(url));
+browsers.push(jellyfish.createZombie(url));
+browsers.push(jellyfish.createSafari(url));
 
 browsers.forEach(function(o) {
   test(o);
