@@ -2,32 +2,34 @@ var assert = require('assert')
   , jellyfish = require('jellyfish');
 
 var test = function(b) {
-  b.go("http://www.google.com")
+  b.go("http://www.wikipedia.com")
     .js("document.title", function(o) {
-      console.log(o);
-      assert.equal(o.result,"Google")
+      console.log(b.name + ": " + JSON.stringify(o));
+      assert.equal(o.result,"Wikipedia")
     })
-    .js("document.getElementsByName(\'q\')[0].value = \'test\'", function(o) {
-      console.log(o);
+    .js("document.getElementById(\'searchInput\').value = \'test\'", function(o) {
+      console.log(b.name +" "+b.tid+ ": " + JSON.stringify(o));
     })
-    .js("document.getElementsByName(\'q\')[0].value", function(o) {
-      console.log(o);
+    .js("document.getElementById(\'searchInput\').value", function(o) {
+      console.log(b.name +" "+b.tid+ ": " + JSON.stringify(o));
+    })
+    .js("document.getElementsByName(\'go\')[0].click()", function(o) {
+      console.log(b.name+" "+b.tid + ": click");
     })
     .jsfile("./test.js", function(o) {
-      console.log(o);
+      console.log(b.name +" "+b.tid+ ": " + JSON.stringify(o));
       b.stop(function() {
-        setTimeout(process.exit, 2000);
+        console.log("Done: " + b.name);
       });
     })
 }
 
-for (var x=0;x<2;x++) {
+for (var x=0;x<5;x++) {
+  var url = "http://www.google.com";
   var browsers = [];
-  var url = "http://www.jelly.io";
-
-  browsers.push(jellyfish.createFirefox(url));
+  
   browsers.push(jellyfish.createChrome(url));
-  browsers.push(jellyfish.createZombie(url));
+  browsers.push(jellyfish.createFirefox(url));
   browsers.push(jellyfish.createSauce(url));
 
   browsers.forEach(function(o) {
