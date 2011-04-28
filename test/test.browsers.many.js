@@ -4,7 +4,7 @@ var assert = require('assert')
 var test = function(b) {
   b.go("http://www.wikipedia.com")
     .js("document.title", function(o) {
-      console.log(b.name + ": " + JSON.stringify(o));
+      console.log(b.name +" - "+b.tid+": " + JSON.stringify(o));
       assert.equal(o.result,"Wikipedia")
     })
     .js("document.getElementById(\'searchInput\').value = \'test\'", function(o) {
@@ -24,7 +24,7 @@ var test = function(b) {
     })
 }
 
-for (var x=0;x<3;x++) {
+for (var x=0;x<5;x++) {
   var url = "http://www.google.com";
   var browsers = [];
   
