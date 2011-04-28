@@ -3,19 +3,22 @@ var assert = require('assert')
 
 var safari = jellyfish.createSafari();
 
-safari.go("http://www.google.com")
-  .js("document.title", function(o) {
-    console.log(o);
-    assert.equal(o.result,"Google")
-  })
-  .js("document.getElementsByName(\'q\')[0].value = \'test\'", function(o) {
-    console.log(o);
-  })
-  .js("document.getElementsByName(\'q\')[0].value", function(o) {
-    console.log(o);
-  })
+safari.go("http://www.wikipedia.com")
+   .js("document.title", function(o) {
+     console.log(safari.name + ": " + JSON.stringify(o));
+     assert.equal(o.result, "Wikipedia")
+   })
+   .js("document.getElementById(\'searchInput\').value = \'test\'", function(o) {
+     console.log(safari.name + ": " + JSON.stringify(o));
+   })
+   .js("document.getElementById(\'searchInput\').value", function(o) {
+     console.log(safari.name + ": " + JSON.stringify(o));
+   })
+   .js("document.getElementsByName(\'go\')[0].click()", function(o) {
+     console.log(safari.name + ": click");
+   })
   .jsfile("./test.js", function(o) {
-    console.log(o);
+    console.log(safari.name + ": " + JSON.stringify(o));
     safari.stop(function() {
       setTimeout(process.exit, 2000);
     });

@@ -3,19 +3,22 @@ var assert = require('assert')
 
 var chrome = jellyfish.createChrome();
 
-chrome.go("http://www.google.com")
-  .js("document.title", function(o) {
-    console.log(o);
-    assert.equal(o.result,"Google")
-  })
-  .js("document.getElementsByName(\'q\')[0].value = \'test\'", function(o) {
-    console.log(o);
-  })
-  .js("document.getElementsByName(\'q\')[0].value", function(o) {
-    console.log(o);
-  })
+chrome.go("http://www.wikipedia.com")
+   .js("document.title", function(o) {
+     console.log(chrome.name + ": " + JSON.stringify(o));
+     assert.equal(o.result,"Wikipedia")
+   })
+   .js("document.getElementById(\'searchInput\').value = \'test\'", function(o) {
+     console.log(chrome.name + ": " + JSON.stringify(o));
+   })
+   .js("document.getElementById(\'searchInput\').value", function(o) {
+     console.log(chrome.name + ": " + JSON.stringify(o));
+   })
+   .js("document.getElementsByName(\'go\')[0].click()", function(o) {
+     console.log(chrome.name + ": click");
+   })
   .jsfile("./test.js", function(o) {
-    console.log(o);
+    console.log(chrome.name + ": " + JSON.stringify(o));
     chrome.stop(function() {
       setTimeout(process.exit, 2000);
     });

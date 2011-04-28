@@ -21,7 +21,7 @@ var test = function(b) {
     .jsfile("./test.js", function(o) {
       console.log(b.name + ": " + JSON.stringify(o));
       b.stop(function() {
-        console.log("Done: " + b.name);
+        console.log(b.name+": DONE");
       });
     })
 };

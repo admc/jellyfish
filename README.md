@@ -84,3 +84,17 @@ browser.go("http://www.google.com")
     });
   })
 </pre>
+
+## ~/.jfrc
+
+{
+  "log": false //show me logs
+  , "firefox": "/path/to/binary" //binary path to firefox if you want to set it manually
+  , "chrome": "path/to/binary" //binary path
+  , "safari": "path/to/binary" //binary path
+  , "interface": "Airport" // required for safari testing (proxy setting)
+  , "username": "username" //sauce labs username
+  , "accessKey": "apikey" //sauce labs apikey
+  , "browserName": "firefox" //sauce labs default browser
+  , "version": "4.0" // sauce labs default browser version
+}
