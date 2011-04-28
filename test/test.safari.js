@@ -3,32 +3,20 @@ var assert = require('assert')
 
 var safari = jellyfish.createSafari();
 
-safari.on('command', function(cmd, args){
-  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
-safari.on('output', function(cmd, args){
-  console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-});
-
 safari.go("http://www.google.com")
   .js("document.title", function(o) {
+    console.log(o);
     assert.equal(o.result,"Google")
   })
-  .user("type", { query:'input[name="q"]', text:'jellyfish'}, function(o) {
-    console.log(o.result);
+  .js("document.getElementsByName(\'q\')[0].value = \'test\'", function(o) {
+    console.log(o);
   })
-  .js("$jfQ('input[name=\"q\"]')[0].value", function(o) {
-    console.log(o.result);
-  })
-  .user("click", { query:'input[name="btnG"]' }, function(o) {
-    console.log(o.result);
+  .js("document.getElementsByName(\'q\')[0].value", function(o) {
+    console.log(o);
   })
   .jsfile("./test.js", function(o) {
-    console.log(o.result)
-  })
-  .jsurl("http://jelly.io/test.js", function(o) { 
-    console.log(o.result);
+    console.log(o);
     safari.stop(function() {
-      process.exit();
+      setTimeout(process.exit, 2000);
     });
   })

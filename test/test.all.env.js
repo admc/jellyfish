@@ -4,41 +4,40 @@ var assert = require('assert')
 var done = [];
 
 var test = function(b) {
-  b.go("http://www.google.com")
+  b.go("http://www.wikipedia.com")
     .js("document.title", function(o) {
-      assert.equal(o.result,"Google");
+      console.log(b.name + ": " + JSON.stringify(o));
+      assert.equal(o.result,"Wikipedia")
     })
-    .user("type", { query:'input[name="q"]', text:'jellyfish'}, function(o) {
-      console.log(o.result);
+    .js("document.getElementById(\'searchInput\').value = \'test\'", function(o) {
+      console.log(b.name + ": " + JSON.stringify(o));
     })
-    .js("$jfQ('input[name=\"q\"]')[0].value", function(o) {
-      console.log(o.result);
+    .js("document.getElementById(\'searchInput\').value", function(o) {
+      console.log(b.name + ": " + JSON.stringify(o));
     })
-    .user("click", { query:'input[name="btnG"]' }, function(o) {
-      console.log(o.result);
+    .js("document.getElementsByName(\'go\')[0].click()", function(o) {
+      console.log(b.name + ": click");
     })
     .jsfile("./test.js", function(o) {
-      console.log(o.result);
+      console.log(b.name + ": " + JSON.stringify(o));
+      b.stop(function() {
+        console.log("Done: " + b.name);
+      });
     })
-    .jsurl("http://jelly.io/test.js", function(o) {
-      console.log(o.result);
-      b.stop();
-    });
 };
 
 var browsers = [];
-var url = "http://www.google.com"
-browsers.push(jellyfish.createFirefox(url));
-browsers.push(jellyfish.createChrome(url));
-browsers.push(jellyfish.createZombie(url));
-browsers.push(jellyfish.createSafari(url));
+browsers.push(jellyfish.createFirefox());
+browsers.push(jellyfish.createChrome());
+browsers.push(jellyfish.createSafari());
+browsers.push(jellyfish.createSauce());
+//browsers.push(jellyfish.createZombie());
 
 browsers.forEach(function(o) {
   test(o);
-  o.on('command', function(cmd, args){
-   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-  });
-  o.on('output', function(cmd, args){
-   console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
-  });
+});
+
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+  console.log(err.stack)
 });

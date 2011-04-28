@@ -1,1 +1,1 @@
-alert("Jellyfish local file loaded successfully!");
+window.location.href

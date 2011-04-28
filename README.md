@@ -68,19 +68,19 @@ run some remote javascript, stop the browser, then exit
 var browser = jellyfish.(createFirefox, createChrome, createZombie)();
 browser.go("http://www.google.com")
   .js("document.title", function(o) {
+    console.log(o);
     assert.equal(o.result,"Google")
   })
-  .user("type", { query:'input[name="q"]', text:'test string'}, function(o) {
-    assert.equal(o.result, true);
+  .js("document.getElementsByName(\'q\')[0].value = \'test\'", function(o) {
+    console.log(o);
   })
-  .js("$jfQ('input[name=\"q\"]')[0].value", function(o) {
-    assert.equal(o.result, 'test string');
+  .js("document.getElementsByName(\'q\')[0].value", function(o) {
+    console.log(o);
   })
-  .user("click", { query:'input[name="btnG"]' }, function(o) {
-    assert.equal(o.result, true);
-    
+  .jsfile("./test.js", function(o) {
+    console.log(o);
     browser.stop(function() {
-      process.exit();
+      setTimeout(process.exit, 2000);
     });
   })
 </pre>
