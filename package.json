@@ -15,6 +15,7 @@
   { "paperboy" : "*"
   , "request" : "*"
   , "zombie" : "*"
+  , "wd" : "*"
   }
 , "bin" : { "jellyfish" : "./lib/bin.js" }
 , "directories" : { "lib" : "./lib" }
