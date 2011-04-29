@@ -81,7 +81,6 @@ run some remote javascript, stop the browser, then exit
 
 <pre>
 {
-  "log": false //show me logs
   , "firefox": "/path/to/binary" //binary path to firefox if you want to set it manually
   , "chrome": "path/to/binary" //binary path
   , "safari": "path/to/binary" //binary path
