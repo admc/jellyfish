@@ -28,7 +28,10 @@ Ubuntu 10.x
 ## Browsers
 Firefox 3.x, 4b <br>
 Google Chrome <br>
-Zombie (headless node.js browser)
+Safari (MacOSX)<br>
+Selenium 2/WebDriver<br>
+Sauce Labs<br>
+Zombie (headless node.js browser)<br>
 
 (Provides hooks to Saucelabs OnDemand platform allowing execution in
 all major browsers.)
