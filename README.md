@@ -1,5 +1,11 @@
 # Jellyfish -- Browser launcher and Javascript execution engine.
 
+Jellyfish bridges the gap between server and client side javascript by allowing 
+control of all the major browsers from a node script.
+
+From running unit tests across platforms, to automating browser based workflows,
+jellyfish aims to free javascript from the confines of a single environment.
+
 ## Install
 
 <pre>
@@ -15,12 +21,18 @@ npm link .
 </pre>
 
 ## Platforms
+
 MacOSX 10.6<br>
 Ubuntu 10.x
+
 ## Browsers
 Firefox 3.x, 4b <br>
 Google Chrome <br>
 Zombie (headless node.js browser)
+
+(Provides hooks to Saucelabs OnDemand platform allowing execution in
+all major browsers.)
+
 ## Usage
 npm require
 <pre>
