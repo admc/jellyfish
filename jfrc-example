@@ -1,0 +1,10 @@
+{ 
+  "firefox": "/path/to/manual/firefox/binary"
+  , "chrome": "path/to/manual/chrome/binary"
+  , "safari": "path/to/manual/safari/binary" 
+  , "interface": "Airport" // required for safari testing (proxy setting) 
+  , "username": "username" //sauce labs username 
+  , "accessKey": "apikey" //sauce labs apikey 
+  , "browserName": "firefox" //sauce labs default browser 
+  , "version": "4.0" // sauce labs default browser version 
+}

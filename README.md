@@ -87,6 +87,7 @@ browser.go("http://www.google.com")
 
 ## ~/.jfrc
 
+<pre>
 {
   "log": false //show me logs
   , "firefox": "/path/to/binary" //binary path to firefox if you want to set it manually
@@ -98,3 +99,4 @@ browser.go("http://www.google.com")
   , "browserName": "firefox" //sauce labs default browser
   , "version": "4.0" // sauce labs default browser version
 }
+</pre>
