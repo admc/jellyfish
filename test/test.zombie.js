@@ -2,6 +2,7 @@ var assert = require('assert')
   , jellyfish = require('jellyfish');
 
 var zombie = jellyfish.createZombie();
+//zombie.couch();
 
 zombie.go("http://www.wikipedia.com")
    .js("document.title", function(o) {

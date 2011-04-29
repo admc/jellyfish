@@ -4,35 +4,32 @@ var assert = require('assert')
 var done = [];
 
 var test = function(b) {
-  b.go("http://www.google.com")
-    .js("document.title", function(o) {
-      assert.equal(o.result,"Google");
-    })
-    .user("type", { query:'input[name="q"]', text:'jellyfish'}, function(o) {
-      console.log(o.result);
-    })
-    .js("$jfQ('input[name=\"q\"]')[0].value", function(o) {
-      console.log(o.result);
-    })
-    .user("click", { query:'input[name="btnG"]' }, function(o) {
-      console.log(o.result);
-    })
+  b.go("http://www.wikipedia.com")
+     .js("document.title", function(o) {
+       console.log(b.name + ": " + JSON.stringify(o));
+       assert.equal(o.result,"Wikipedia")
+     })
+     .js("document.getElementById(\'searchInput\').value = \'test\'", function(o) {
+       console.log(b.name + ": " + JSON.stringify(o));
+     })
+     .js("document.getElementById(\'searchInput\').value", function(o) {
+       console.log(b.name + ": " + JSON.stringify(o));
+     })
+     .js("document.getElementsByName(\'go\')[0].click()", function(o) {
+       console.log(b.name + ": click");
+     })
     .jsfile("./test.js", function(o) {
-      console.log(o.result);
-    })
-    .jsurl("http://jelly.io/test.js", function(o) {
-      console.log(o.result);
+      console.log(b.name + ": " + JSON.stringify(o));
       b.stop();
-    });
+    })
 };
 
 var browsers = [];
-browsers.push(jellyfish.createFirefox());
-browsers.push(jellyfish.createChrome());
-browsers.push(jellyfish.createZombie());
+browsers.push(jellyfish.createFirefox(function(o) { o.couch() }));
+browsers.push(jellyfish.createChrome(function(o) { o.couch() }));
+//browsers.push(jellyfish.createZombie(function(o) { o.couch() }));
 
 browsers.forEach(function(o) {
-  o.couch();
   test(o);
   o.on('command', function(cmd, args){
    console.log(' \x1b[33m%s\x1b[0m: %s', cmd, args);
