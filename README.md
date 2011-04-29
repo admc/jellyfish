@@ -30,7 +30,7 @@ Firefox 3.x, 4b <br>
 Google Chrome <br>
 Safari (MacOSX)<br>
 Selenium 2/WebDriver<br>
-Sauce Labs<br>
+Sauce Labs OnDemand<br>
 Zombie (headless node.js browser)<br>
 
 (Provides hooks to Saucelabs OnDemand platform allowing execution in
