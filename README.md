@@ -77,6 +77,21 @@ run some remote javascript, stop the browser, then exit
 })
 </pre>
 
+## Reporting
+
+<pre>
+var jellyfish = require('jellyfish')
+
+var browser = jellyfish.createFirefox(function(){
+  browser.couch({uri:'my couch url', port:5984, db:'mydbname'})
+});
+
+// You can just do browser.couch() and it will default to:
+// {uri:'localhost', port:5984, db:'jellyfish'}
+
+// Do stuff and it will automatically get reported to couch!
+</pre>
+
 ## ~/.jfrc
 
 <pre>
