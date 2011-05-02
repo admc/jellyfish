@@ -61,6 +61,8 @@ $jfQ(document).ready(function() {
   
   $jfQ.post('/_jellyfish/wake', JSON.stringify(data), function(data) {
     window.onbeforeunload = function() {
+      //try to hack it from getting the next action so fast
+      user = null;
       var data = {};
       data.title = window.document.title;
       data.url = window.location.href;

@@ -30,15 +30,10 @@ var browsers = [];
 browsers.push(jellyfish.createFirefox());
 browsers.push(jellyfish.createChrome());
 browsers.push(jellyfish.createSafari());
-//browsers.push(jellyfish.createSauce());
+browsers.push(jellyfish.createSauce());
 browsers.push(jellyfish.createWebdriver());
-//browsers.push(jellyfish.createZombie());
+browsers.push(jellyfish.createZombie());
 
 browsers.forEach(function(o) {
   test(o);
-});
-
-process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
-  console.log(err.stack)
 });
