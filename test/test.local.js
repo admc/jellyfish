@@ -13,7 +13,7 @@ var test = function(b) {
     .js("document.getElementsByClassName(\'code\').length", function(o) {
       log(b.name , [b.tid, JSON.stringify(o)]);
     })
-    .js("document.getElementsByClassName(\'env\')[0].style.border", function(o) {
+    .js("window.location.href", function(o) {
       log(b.name , [b.tid, JSON.stringify(o)]);
     })
     .jsfile("./test.js", function(o) {
@@ -28,8 +28,8 @@ var browsers = [];
 var url = "http://localhost"
 browsers.push(jellyfish.createFirefox(url));
 browsers.push(jellyfish.createChrome(url));
-browsers.push(jellyfish.createSafari(url));
-browsers.push(jellyfish.createSauce(url));
+//browsers.push(jellyfish.createSafari(url));
+//browsers.push(jellyfish.createSauce(url));
 browsers.push(jellyfish.createWebdriver(url));
 browsers.push(jellyfish.createZombie(url));
 
