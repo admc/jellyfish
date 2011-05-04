@@ -22,9 +22,10 @@ function waitForJellyMsg() {
       type: 'POST',
       url: '/_jellyfish/complete',
       data: JSON.stringify({result:true}),
-      success: function(o) { user = null; },
+      success: function(o) {},
       dataType: 'json'
     });
+    window.jfComplete = false;
   }
   
   $jfQ.ajax({

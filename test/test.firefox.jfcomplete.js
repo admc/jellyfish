@@ -9,8 +9,10 @@ firefox.on('result', function(res) {
 
 firefox.on('complete', function(res) {
   console.log(firefox.name + ' : '+firefox.tid + ' - \x1b[33m%s\x1b[0m', JSON.stringify(res));
-  firefox.stop(function() {
-    setTimeout(process.exit, 2000);
+  firefox.js("document.location.href", function() {
+    firefox.stop(function() {
+      setTimeout(process.exit, 2000);
+    })    
   })
 });
 
