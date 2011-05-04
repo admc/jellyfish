@@ -18,7 +18,6 @@ function waitForJellyMsg() {
   }
   
   if (window.jfComplete == true) {
-    alert("jfComplete");
     $jfQ.ajax({
       type: 'POST',
       url: '/_jellyfish/complete',
