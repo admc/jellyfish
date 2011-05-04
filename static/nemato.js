@@ -17,6 +17,17 @@ function waitForJellyMsg() {
     return;
   }
   
+  if (window.jfComplete == true) {
+    alert("jfComplete");
+    $jfQ.ajax({
+      type: 'POST',
+      url: '/_jellyfish/complete',
+      data: JSON.stringify({result:true}),
+      success: function(o) { user = null; },
+      dataType: 'json'
+    });
+  }
+  
   $jfQ.ajax({
     type: "GET",
     url: "/_jellyfish/poll",
@@ -43,8 +54,7 @@ function waitForJellyMsg() {
           success: function(o) {},
           dataType: 'json'
         });
-      }
-      
+      }      
       setTimeout('waitForJellyMsg()', 1000);
     },
     error: function(XMLHttpRequest, textStatus, errorThrown) {
