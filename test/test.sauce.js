@@ -2,8 +2,9 @@ var assert = require('assert')
   , jellyfish = require('jellyfish');
 
 var sauce = jellyfish.createSauce();
-//sauce.opts.browserName = "iexplore";
-//sauce.opts.version = "9";
+// sauce.opts.platform = "WINDOWS";
+// sauce.opts.browserName = "iexplore";
+// sauce.opts.version = "6";
 
 sauce.go("http://www.wikipedia.com")
    .js("document.title", function(o) {
