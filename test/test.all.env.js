@@ -2,7 +2,6 @@ var assert = require('assert')
   , jellyfish = require('jellyfish');
 
 var done = [];
-
 var test = function(b) {
   b.go("http://www.wikipedia.com")
     .js("document.title", function(o) {
@@ -12,6 +11,7 @@ var test = function(b) {
     .js("document.getElementById(\'searchInput\').value")
     .js("document.getElementsByName(\'go\')[0].click()")
     .jsfile("./test.js", function(o) {
+      console.log("\x1b[36m"+o.name + '\x1b[0m : '+o.tid + ' - \x1b[33m%s\x1b[0m', "Stopped");
       b.stop();
     })
 };
@@ -22,12 +22,11 @@ browsers.push(jellyfish.createChrome());
 browsers.push(jellyfish.createSafari());
 browsers.push(jellyfish.createSauce());
 browsers.push(jellyfish.createWebdriver());
-//browsers.push(jellyfish.createZombie());
+browsers.push(jellyfish.createZombie());
 
 browsers.forEach(function(o) {
   o.on('result', function(res) {
-    console.log(o.name + ' : '+o.tid + ' - \x1b[33m%s\x1b[0m', JSON.stringify(res));
+    console.log("\x1b[36m"+o.name + '\x1b[0m : '+o.tid + ' - \x1b[33m%s\x1b[0m', JSON.stringify(res));
   });
-
   test(o);
 });
