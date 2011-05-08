@@ -11,7 +11,7 @@ var test = function(b) {
     .js("document.getElementById(\'searchInput\').value")
     .js("document.getElementsByName(\'go\')[0].click()")
     .jsfile("./test.js", function(o) {
-      console.log("\x1b[36m"+o.name + '\x1b[0m : '+o.tid + ' - \x1b[33m%s\x1b[0m', "Stopped");
+      console.log("\x1b[36m"+b.name + '\x1b[0m : '+b.tid + ' - \x1b[33mStopped\x1b[0m');
       b.stop();
     })
 };
