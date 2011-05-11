@@ -9,7 +9,7 @@ var test = function(b) {
     .js("document.getElementById(\'searchInput\').value = \'test\'")
     .js("document.getElementById(\'searchInput\').value")
     .js("document.getElementsByName(\'go\')[0].click()")
-    .jsfile("../example_file.js", function(o) {
+    .jsfile("../stub/example_file.js", function(o) {
       b.stop(function() {
         console.log(b.name + ' : '+b.tid + ' - \x1b[33m%s\x1b[0m', 'Stopped');
       });
