@@ -15,7 +15,7 @@
   { "paperboy" : "0.0.x"
   , "request" : "1.9.x"
   , "zombie" : "0.9.x"
-  , "wd" : "0.0.5"
+  , "wd" : "0.0.x"
   }
 , "bin" : { "jellyfish" : "./lib/bin.js" }
 , "directories" : { "lib" : "./lib" }
