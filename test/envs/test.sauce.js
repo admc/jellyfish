@@ -8,7 +8,7 @@ browser.opts.version = "8";
 browser.opts.name = "Jellyfish test for iexplorer 8";
 
 browser.on('result', function(res) {
-  console.log(firefox.name + ' : '+firefox.tid + ' - \x1b[33m%s\x1b[0m', JSON.stringify(res));
+  console.log(browser.name + ' : '+browser.tid + ' - \x1b[33m%s\x1b[0m', JSON.stringify(res));
 });
 
 browser.go("http://www.wikipedia.com")
