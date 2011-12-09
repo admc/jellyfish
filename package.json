@@ -14,7 +14,7 @@
 , "dependencies" : 
   { "paperboy" : "0.0.x"
   , "request" : "1.9.x"
-  , "zombie" : "0.9.x"
+  , "zombie" : "0.x"
   , "wd" : "0.0.8"
   }
 , "bin" : { "jellyfish" : "./lib/bin.js" }
