@@ -9,26 +9,26 @@ user.asserts = {};
 user.select = function (p) {
   //lookup
   var element = elementslib.lookup(p);
-  
+
   //if the index selector was used, select by index
   if (p.index){
     element.options[p.index].selected = true;
     return true;
   }
-      
+
   //Sometimes we can't directly access these at this point, not sure why
   try {
     if (element.options[element.options.selectedIndex].text == p['option']){
       return true;
     }
   } catch(err){}
-  
-  try {  
+
+  try {
     if (element.options[element.options.selectedIndex].value == p['val']){
       return true;
     }
   } catch(err){}
-  
+
   events.triggerEvent(element, 'focus', false);
   var optionToSelect = null;
   for (opt = 0; opt < element.options.length; opt++){
@@ -71,10 +71,10 @@ user.mouseDown = function (p) {
       mupElement = window.document.body;
     }
     if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
-        var box = mupElement.getBoundingClientRect(); 
+        var box = mupElement.getBoundingClientRect();
         var left = box.left;
         var top = box.top + 2;
-        events.triggerMouseEvent(mupElement, 'mousedown', true, left, top);  
+        events.triggerMouseEvent(mupElement, 'mousedown', true, left, top);
     }
     else { events.triggerMouseEvent(mupElement, 'mousedown', true);  }
 };
@@ -88,7 +88,7 @@ user.mouseMoveTo = function (p) {
   var coords = p.coords.split(',');
   coords[0] = coords[0].replace('(','');
   coords[1] = coords[1].replace(')','');
-  
+
   events.triggerMouseEvent(webApp.document.body, 'mousemove', true, coords[0], coords[1]);
 };
 
@@ -100,12 +100,12 @@ user.mouseUp = function (p){
  try {
    var mupElement = elementslib.lookup(p);
  } catch(err){}
- 
+
  if (mupElement == null){
    mupElement = window.document.body;
  }
  if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
-   var box = mupElement.getBoundingClientRect(); 
+   var box = mupElement.getBoundingClientRect();
    var left = box.left;
    var top = box.top + 2;
    events.triggerMouseEvent(mupElement, 'mouseup', true, left, top);
@@ -118,7 +118,7 @@ user.mouseUp = function (p){
 /**
 * Fire the mouseover event against a specified DOM element
 * @param {Object} p The JavaScript object providing: Locator
-*/  
+*/
 user.mouseOver = function (p){
  var mdnElement = elementslib.lookup(p);
  events.triggerMouseEvent(mdnElement, 'mouseover', true);
@@ -219,7 +219,7 @@ user.scroll = function(p){
 
 
 //Firefox Specific Controller Methods
-if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)){  
+if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
   //Click function for Mozilla with Chrome
   user.click = function(p){
     var element = elementslib.lookup(p);
@@ -246,7 +246,7 @@ if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
       if (!browser.isChrome && savedEvent != null && !savedEvent.getPreventDefault()) {
           if (element.href) {
               user.open({"url": element.href, 'reset':false});
-          } 
+          }
           else {
               var itrElement = element;
               while (itrElement != null) {
@@ -261,17 +261,17 @@ if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
     }
     catch(err){}
     return true;
-    
+
   };
 
   //there is a problem with checking via click in safari
   user.check = function(p){
-    return user.click(p);    
+    return user.click(p);
   };
 
   //Radio buttons are even WIERDER in safari, not breaking in FF
   user.radio = function(p){
-    return user.click(p);      
+    return user.click(p);
   };
 
   //Double click for Mozilla
@@ -309,7 +309,7 @@ if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
    var s = actualValue;
    for (var c = 0; c < s.length; c++){
      events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
-     events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false); 
+     events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false);
      if (s.charAt(c) == "."){
        element.value += s.charAt(c);
      }
@@ -331,7 +331,7 @@ if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
 if (/Safari[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
   //there is a problem with checking via click in safari
   user.check = function(p){
-    return user.click(p);    
+    return user.click(p);
   };
 
   //Radio buttons are even WIERDER in safari
@@ -396,7 +396,7 @@ if (/Safari[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
     for (var c = 0; c < s.length; c++){
        element.value += s.charAt(c);
        events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
-       events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false); 
+       events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false);
        events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
     }
     // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
@@ -409,7 +409,7 @@ if (/Safari[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
 
 if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
 
-  user.click = function(p){        
+  user.click = function(p){
     var element = elementslib.lookup(p);
     events.triggerEvent(element, 'focus', false);
 
@@ -432,12 +432,12 @@ if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
   }
 
   //double click for ie
-  user.doubleClick = function(p){      
+  user.doubleClick = function(p){
      var element = elementslib.lookup(p);
      events.triggerEvent(element, 'focus', false);
      // Trigger the mouse event.
-     events.triggerMouseEvent(element, 'dblclick', true);   
-     events.triggerEvent(element, 'blur', false);       
+     events.triggerMouseEvent(element, 'dblclick', true);
+     events.triggerEvent(element, 'blur', false);
   };
 
   //Type Function
@@ -468,7 +468,7 @@ if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
      for (var c = 0; c < s.length; c++){
        element.value += s.charAt(c);
        events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
-       events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false); 
+       events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false);
        events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
      }
 
@@ -477,11 +477,11 @@ if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
      events.triggerEvent(element, 'change', true);
      return true;
    };
-};    
+};
 
 //Load opera specific controller methods
 if (/Opera[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
-  user.click = function(p){        
+  user.click = function(p){
      var element = elementslib.lookup(p);
      events.triggerEvent(element, 'focus', false);
 
@@ -520,11 +520,11 @@ user.radio = function(p){
  };
 
  //double click for ie
-user.doubleClick = function(p){      
+user.doubleClick = function(p){
    var element = elementslib.lookup(p);
    events.triggerEvent(element, 'focus', false);
-   events.triggerMouseEvent(element, 'dblclick', true);   
-   events.triggerEvent(element, 'blur', false);       
+   events.triggerMouseEvent(element, 'dblclick', true);
+   events.triggerEvent(element, 'blur', false);
  };
 
  //Type Function
@@ -553,7 +553,7 @@ user.doubleClick = function(p){
    for (var c = 0; c < s.length; c++){
     element.value += s.charAt(c);
     events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
-    events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false); 
+    events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false);
     events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
    }
 
@@ -688,7 +688,7 @@ user.asserts.assertValue = function (p) {
   if (n.value.indexOf(validator) == -1){
     throw "Value not found, "+ n.value + "not equal to "+ validator;
   }
-  
+
 };
 
 //Assert that a provided value is selected in a select element
@@ -734,14 +734,14 @@ user.asserts.assertProperty = function (p) {
   var element = elementslib.lookup(p);
   var vArray = p.validator.split('|');
   var value = eval ('element.' + vArray[0]+';');
-  
+
   if (value.indexOf(vArray[1]) != -1){
     return true;
   }
   if (String(value) == String(vArray[1])) {
     return true;
   }
-  
+
   throw "Property did not match."
 };
 
@@ -849,9 +849,9 @@ user.asserts._AssertFactory = new function () {
 	      return true;
       }
       else {
-        var message = meth + ' -- ' +        
+        var message = meth + ' -- ' +
         createErrMsg(asrt.errMsg, args);
-        
+
 	      throw new user.asserts._WindmillAssertException(comment, message);
       }
     };

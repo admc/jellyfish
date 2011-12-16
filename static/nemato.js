@@ -16,7 +16,7 @@ function waitForJellyMsg() {
   } catch(err){
     return;
   }
-  
+
   if (window.jfComplete == true) {
     $jfQ.ajax({
       type: 'POST',
@@ -27,7 +27,7 @@ function waitForJellyMsg() {
     });
     window.jfComplete = false;
   }
-  
+
   $jfQ.ajax({
     type: "GET",
     url: "/_jellyfish/poll",
@@ -38,15 +38,15 @@ function waitForJellyMsg() {
     dataType: 'json',
     success: function(obj) {
       window.jfrunning = true;
-      
+
       if (obj.meth == "run") {
         var res = run(obj.code);
-        
+
         var rObj = {};
         rObj.meth = "result";
         rObj.res = res;
         rObj.qid = obj.qid;
-             
+
         $jfQ.ajax({
           type: 'POST',
           url: '/_jellyfish/result',
@@ -54,7 +54,7 @@ function waitForJellyMsg() {
           success: function(o) {},
           dataType: 'json'
         });
-      }      
+      }
       setTimeout('waitForJellyMsg()', 1000);
     },
     error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -68,7 +68,7 @@ $jfQ(document).ready(function() {
   data.title = window.document.title;
   data.url = window.location.href;
   data.agent = navigator.userAgent;
-  
+
   $jfQ.post('/_jellyfish/wake', JSON.stringify(data), function(data) {
     window.onbeforeunload = function() {
       //try to hack it from getting the next action so fast
@@ -77,7 +77,7 @@ $jfQ(document).ready(function() {
       data.title = window.document.title;
       data.url = window.location.href;
       data.agent = navigator.userAgent;
-      
+
       $jfQ.post('/_jellyfish/die', JSON.stringify(data), function(data) {});
     };
 
@@ -87,9 +87,9 @@ $jfQ(document).ready(function() {
         waitForJellyMsg();
       }
     }, 5000);
-    
+
   }, 'json');
-  
+
   window.alert = function(str) {
     return "alerted: " + str;
   };

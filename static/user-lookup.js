@@ -1,9 +1,9 @@
 var elementslib = new function(){
-  
+
   var domNode = null;
   //keep track of the locators we cant get via the domNode
   var locators = {};
-  
+
   //Translates from the way we are passing objects to functions to the lookups
   this.lookup = function (p, throwErr){
     if (typeof(throwErr) == "undefined"){
@@ -19,7 +19,7 @@ var elementslib = new function(){
     }
     //if xpath was passed, lookup as xpath
     if(typeof p.xpath != "undefined") {
-      s = 'Looking up xpath '+ p.xpath;        
+      s = 'Looking up xpath '+ p.xpath;
       element = this.Element.XPATH(p.xpath);
     }
     //if id was passed, do as such
@@ -57,14 +57,14 @@ var elementslib = new function(){
       element = $jfQ(p.query)[0];
     }
     //scroll so that the element is in view
-    if (element) { 
-      //element.scrollIntoView(); 
+    if (element) {
+      //element.scrollIntoView();
       return element;
     }
     else if (throwErr == true) { throw s + ", failed."; }
     else{ this.lookup(p, true); }
   };
-  
+
   //element constructor
   this.Element = function(node){
     if (node){ domNode = node;}
@@ -122,7 +122,7 @@ var elementslib = new function(){
     //do the lookup, then set the domNode to the result
     return returnOrThrow(s);
   };
-  
+
   //either returns the element, or throws an exception
   var returnOrThrow = function(s){
     if (!domNode){
@@ -135,7 +135,7 @@ var elementslib = new function(){
       return domNode;
     }
   }
-  
+
   //do the recursive search
   //takes the function for resolving nodes and the string
   var nodeSearch = function(func, s, doc){
@@ -146,28 +146,28 @@ var elementslib = new function(){
      //do the lookup in the current window
      try{ element = func.call(w, s, doc);}
      catch(err){ element = null; }
-     
+
       if (!element){
         var fc = w.frames.length;
-        var fa = w.frames;   
+        var fa = w.frames;
         for (var i=0;i<fc;i++){
-          recurse(fa[i], func, s, doc); 
+          recurse(fa[i], func, s, doc);
         }
      }
      else { e = element; }
     };
-        
+
     if (element){ return element; }
     recurse(window, func, s, doc);
-        
+
     return e;
   }
-  
+
   //Lookup by ID
   var nodeById = function (s){
     return this.document.getElementById(s);
   }
-  
+
   //DOM element lookup functions, private to elementslib
   var nodeByName = function (s) { //search nodes by name
     //sometimes the win object won't have this object
@@ -180,7 +180,7 @@ var elementslib = new function(){
     catch(err){};
     return null;
   };
-  
+
   //Lookup by link
   var nodeByLink = function (s) {//search nodes by link text
     var getText = function(el){
@@ -197,7 +197,7 @@ var elementslib = new function(){
               var child = el.childNodes.item(i);
               text += getText(child);
           }
-          if (el.tagName == "P" || el.tagName == "BR" || 
+          if (el.tagName == "P" || el.tagName == "BR" ||
             el.tagName == "HR" || el.tagName == "DIV") {
             text += "\n";
           }
@@ -218,7 +218,7 @@ var elementslib = new function(){
     }
     return null;
   };
-  
+
   //DOM element lookup functions, private to elementslib
   var nodeByTagname = function (s) { //search nodes by name
     //sometimes the win object won't have this object
@@ -233,7 +233,7 @@ var elementslib = new function(){
     }
     return this.document.getElementsByTagName(cn)[idx];
   };
-  
+
   //DOM element lookup functions, private to elementslib
   var nodeByClassname = function (s) { //search nodes by name
     //sometimes the win object won't have this object
@@ -248,7 +248,7 @@ var elementslib = new function(){
     }
     return this.document.getElementsByClassName(cn)[idx];
   };
-  
+
   //Lookup DOM node by value attribute
   var nodeByValue = function (s) {
     var getElementsByAttribute = function(oElm, strTagName, strAttributeName, strAttributeValue){
@@ -274,7 +274,7 @@ var elementslib = new function(){
     }
     return node[0];
   };
-  
+
   var nodeByLabel = function (s) { //search nodes by name
     //sometimes the win object won't have this object
     var labels = this.document.getElementsByTagName('label');
@@ -287,7 +287,7 @@ var elementslib = new function(){
         label = labels[i];
       }
     }
-    
+
     //If we have a label, use its for attrib to get the id of the input
     if (label != null){
       if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
@@ -301,7 +301,7 @@ var elementslib = new function(){
     //either return the found input node, or null
     return node;
   };
-  
+
   //Lookup with xpath
   var nodeByXPath = function (xpath, doc) {
     //if there is built in document.evaluate
