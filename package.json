@@ -11,7 +11,7 @@
   { "url" : "http://github.com/admc/jellyfish/issues" }
 , "engines" : ["node"]
 , "main" : "./lib/main"
-, "dependencies" : 
+, "dependencies" :
   { "paperboy" : "0.0.x"
   , "request" : "1.9.x"
   , "zombie" : "0.x"

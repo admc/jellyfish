@@ -1,7 +1,7 @@
 var jellyfish = require('jellyfish')
   , assert = require('assert')
   ;
-  
+
 var sauce = jellyfish.createSauce();
 sauce.opts.platform = "VISTA";
 sauce.opts.browserName = "iexplore";
