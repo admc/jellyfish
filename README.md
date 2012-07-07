@@ -72,7 +72,7 @@ run some remote javascript, stop the browser, then exit
 .jsurl("http://jelly.io/test.js", function(o) { 
   assert.equal(o.result, "alerted: Jellyfish remote file loaded successfully!")
   browser.stop(function() {
-    setTimeout(process.exit(), 2000);
+    setTimeout(process.exit, 2000);
   })
 })
 </pre>
